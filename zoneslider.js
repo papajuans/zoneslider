@@ -1,3 +1,102 @@
+var Zone = function(name, offset) {
+  this.name = name;
+  this.offset = offset;
+}
+
+Zone.prototype.now = function() {
+  return TimeUtil.getNowLocalTime(this.offset);
+}
+
+Zone.prototype.nowString = function() {
+  return this.name + "\n" + TimeUtil.formatTime(this.now()) + "\n" + TimeUtil.formatDate(this.now());
+}
+
+/***********************************/
+
+var ZoneMarker = function(timebox, zone) {
+  var self = this;
+  this.timebox = timebox;
+  this.zone = zone;
+  this.time = this.zone.now();
+  subscribe("drag", function(dx,dy){
+    self.move(dx,dy);
+  });
+  subscribe("drag.end", function(){
+    self.endDrag();
+  });
+  subscribe("drag.start", function(){
+    self.startDrag();
+  });
+}
+
+ZoneMarker.prototype.draw = function() {
+  // Determine x offset based on currentTime
+  var hourWidth = this.timebox.width / 24;
+  var x = this.zone.now().getHours() * hourWidth + timebox.attr("x");
+  console.log("calculated offset: " + x);
+  this.timeline = paper.rect(x, 20, 1, 60).attr("stroke","#798BAB");
+  this.label = paper.text(x, 120, this.getLabelText() ).attr({font: "16px Arial"});
+}
+
+ZoneMarker.prototype.getLabelText = function() {
+  return this.zone.name + "\n" + TimeUtil.formatTime(this.time) + "\n" + TimeUtil.formatDate(this.time);
+}
+
+ZoneMarker.prototype.storePosition = function() {
+  this.timeline_ox = this.timeline.attr("x");
+  this.label_ox = this.label.attr("x");
+}
+
+ZoneMarker.prototype.wireDragging = function() {
+  this.timeline.drag(this.dragging, this.starting, this.ending, this);
+  this.label.drag(this.dragging, this.starting, this.ending, this);
+}
+
+ZoneMarker.prototype.starting = function() {
+  publish("drag.start");
+}
+
+ZoneMarker.prototype.startDrag = function() {
+  this.label.attr({opacity: 0.5});
+  this.storePosition();
+}
+
+ZoneMarker.prototype.dragging = function(dx,dy) {
+  publish("drag", [dx,dy]);
+}
+
+ZoneMarker.prototype.move = function(dx,dy) {
+  this.timeline.attr({x: this.timeline_ox + dx});
+  this.label.attr({x: this.label_ox+ dx});
+  
+  /*
+  if(this.timeline_ox + dx > timeboxLastLine) {
+    this.timeline.attr({x: timeboxFirstLine + dx - timeboxLastLine});
+  }*/
+
+  this.deltaSeconds = this.toSeconds(dx);
+  var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
+  this.label.attr({text: this.zone.name + "\n" + TimeUtil.formatTime(someTime) + "\n" + TimeUtil.formatDate(someTime)});
+}
+
+ZoneMarker.prototype.toSeconds = function(pixels) {
+  var secondsInAPixel = (24 * 3600) / this.timebox.width;
+  return pixels * secondsInAPixel;
+}
+
+ZoneMarker.prototype.ending = function() {
+  publish("drag.end");
+}
+
+ZoneMarker.prototype.endDrag = function() {
+  this.label.attr({opacity: 1});
+  this.storePosition();
+  this.time = new Date(this.time.getTime() + this.deltaSeconds*1000);
+}
+
+
+/***********************************/
+
 var paper = Raphael("zoneslider",900,200);
 var timebox = paper.rect(20,20,860,60);
 timebox.attr("stroke", "#ccc");
@@ -11,30 +110,20 @@ var renderHourMarks = function(paper){
   var sixpm_label = paper.text(655,30, "6pm").attr({font: "12px Arial"});
 }
 
-var zone1_x = 100;
-var zone1 = paper.rect(zone1_x, 20, 1, 60).attr("stroke","#798BAB");
-var zone1_label = paper.text(zone1_x, 100, "NYC").attr({font: "16px Arial"});
-
-var zone2_delta = 144 //hardcoded nonsense
-var zone2 = paper.rect(zone1_x + zone2_delta, 20, 1, 60).attr("stroke","#798BAB");
-var zone2_label = paper.text(zone1_x + zone2_delta, 100, "LON").attr({font: "16px Arial"});
-
-var originalPoints = []
-
-var start = function () {
-  originalPoints[0] = zone1_label.attr("x");
-  originalPoints[1] = zone1.attr("x");
-  originalPoints[2] = zone2_label.attr("x");
-  originalPoints[3] = zone2.attr("x");
-}
-var move = function (dx, dy) {
-  zone1_label.attr({x: originalPoints[0] + dx});
-  zone1.attr({x: originalPoints[1] + dx});
-  zone2_label.attr({x: originalPoints[2] + dx});
-  zone2.attr({x: originalPoints[3] + dx});
-}
-var up = function () {}
-
 renderHourMarks(paper);
-paper.set(zone1_label,zone2_label).drag(move,start,up);
+
+var nyc = new Zone("NYC", -5);
+var nycMarker = new ZoneMarker(paper, nyc);
+nycMarker.draw();
+nycMarker.wireDragging();
+
+var london = new Zone("London", 0);
+var londonMarker = new ZoneMarker(paper, london);
+londonMarker.draw();
+londonMarker.wireDragging();
+
+var taipei = new Zone("Taipei", 8);
+var taipeiMarker = new ZoneMarker(paper, taipei);
+taipeiMarker.draw();
+taipeiMarker.wireDragging();
 
