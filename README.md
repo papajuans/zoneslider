@@ -1,9 +1,12 @@
 # Installation Instructions
 
+This project depends on grunt.
+
 This will start the http server and the browserify watcher
 
 ```
 npm install
+grunt browserify
 grunt
 ```
 
