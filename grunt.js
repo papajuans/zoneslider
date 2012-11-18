@@ -54,6 +54,9 @@ module.exports = function(grunt) {
         entries: ['js/src/**/*.js'],
         prepend: ['<banner:meta.banner>'],
         append: [],
+        options:{
+          debug:true
+        },
         hook: function (bundle) {
           // Do something with bundle
         }
