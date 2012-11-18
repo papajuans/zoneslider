@@ -34,3 +34,5 @@ var TimeUtil = {
                     return localTime;
   }
 }
+
+module.exports = TimeUtil;
