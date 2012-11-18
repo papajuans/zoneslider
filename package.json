@@ -1,0 +1,19 @@
+{
+  "author": "Ryan J <ryan@roflopoly.com> (roflopoly.com)",
+  "name": "zoneslider",
+  "description": "Use Raphaël.js for interesting timezone visualization.",
+  "version": "0.0.0",
+  "homepage": "https://github.com/papajuans/zoneslider",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/papajuans/zoneslider.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt-browserify": "0.1.0"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
