@@ -62,10 +62,14 @@ module.exports = function(grunt) {
         }
       }
     },
+    server: {
+      port: 8080,
+      base: './'
+    },
     uglify: {}
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint qunit concat min');
+  grunt.registerTask('default', 'server watch');
   grunt.loadNpmTasks('grunt-browserify');
 };
