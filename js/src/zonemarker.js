@@ -23,6 +23,11 @@ ZoneMarker.prototype.draw = function() {
   console.log("calculated offset: " + x);
   this.timeline = paper.rect(x, 20, 1, 60).attr("stroke","#798BAB");
   this.label = paper.text(x, 120, this.getLabelText() ).attr({font: "16px Arial"});
+  this.debug = paper.text(x, 160, this.getXOffset() ).attr({font: "10px Arial"});
+}
+
+ZoneMarker.prototype.getXOffset = function() {
+  return "X: " + this.timeline.attr("x");
 }
 
 ZoneMarker.prototype.getLabelText = function() {
@@ -32,6 +37,7 @@ ZoneMarker.prototype.getLabelText = function() {
 ZoneMarker.prototype.storePosition = function() {
   this.timeline_ox = this.timeline.attr("x");
   this.label_ox = this.label.attr("x");
+  this.debug_ox = this.debug.attr("x");
 }
 
 ZoneMarker.prototype.wireDragging = function() {
@@ -53,26 +59,25 @@ ZoneMarker.prototype.dragging = function(dx,dy) {
 }
 
 ZoneMarker.prototype.move = function(dx,dy) {
-  //console.log("∆x is " + dx);
   var newXPosition = this.timeline_ox + dx;
-  //console.log(this.zone.name + " newXPosition is: " + newXPosition);
+  console.log(this.zone.name + "∆x: " + dx + ", newXPosition: " + newXPosition);
+
   // Handle wrapping
   if(newXPosition > 740) {
     newXPosition = newXPosition - 720;
   } else if(newXPosition < 20) {
-    if(newXPosition >= 0) {
-      newXPosition = 740 - ((this.timeline_ox - 20) + (-1 * dx));
-    } else {
-      newXPosition = 740 - (newXPosition * -1 + 20);
-    }
+    var distanceFrom20 = 20 - newXPosition;
+    console.log("Distance from 20: " + distanceFrom20);
+    newXPosition = 740 - distanceFrom20;
   } 
-
   this.timeline.attr({x: newXPosition});
   this.label.attr({x: newXPosition});
+  this.debug.attr({x: newXPosition});
 
   this.deltaSeconds = this.toSeconds(dx);
   var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
   this.label.attr({text: this.zone.name + "\n" + TimeUtil.formatTime(someTime) + "\n" + TimeUtil.formatDate(someTime)});
+  this.debug.attr({text: "X: " + newXPosition + ", ∆x: " + dx});
 }
 
 ZoneMarker.prototype.toSeconds = function(pixels) {
@@ -86,8 +91,9 @@ ZoneMarker.prototype.ending = function() {
 
 ZoneMarker.prototype.endDrag = function() {
   this.label.attr({opacity: 1});
-  this.storePosition();
   this.time = new Date(this.time.getTime() + this.deltaSeconds*1000);
+  this.debug.attr({text: "X: " + this.debug.attr("x")});
+  this.storePosition();
 }
 
 module.exports = ZoneMarker;
