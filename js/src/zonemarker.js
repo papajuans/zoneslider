@@ -17,8 +17,9 @@ var ZoneMarker = function(timebox, zone) {
 
 ZoneMarker.prototype.draw = function() {
   // Determine x offset based on currentTime
-  var hourWidth = this.timebox.width / 24;
-  var x = this.zone.now().getHours() * hourWidth + timebox.attr("x");
+  var minutesPassedInDay = this.zone.now().getHours() * 60 + this.zone.now().getMinutes();
+  console.log("minutes passed so far: " + this.zone.name + " " + minutesPassedInDay);
+  var x = minutesPassedInDay * 60 / 120 + 20;
   console.log("calculated offset: " + x);
   this.timeline = paper.rect(x, 20, 1, 60).attr("stroke","#798BAB");
   this.label = paper.text(x, 120, this.getLabelText() ).attr({font: "16px Arial"});
@@ -52,13 +53,22 @@ ZoneMarker.prototype.dragging = function(dx,dy) {
 }
 
 ZoneMarker.prototype.move = function(dx,dy) {
-  this.timeline.attr({x: this.timeline_ox + dx});
-  this.label.attr({x: this.label_ox+ dx});
-  
-  /*
-  if(this.timeline_ox + dx > timeboxLastLine) {
-    this.timeline.attr({x: timeboxFirstLine + dx - timeboxLastLine});
-  }*/
+  //console.log("∆x is " + dx);
+  var newXPosition = this.timeline_ox + dx;
+  //console.log(this.zone.name + " newXPosition is: " + newXPosition);
+  // Handle wrapping
+  if(newXPosition > 740) {
+    newXPosition = newXPosition - 720;
+  } else if(newXPosition < 20) {
+    if(newXPosition >= 0) {
+      newXPosition = 740 - ((this.timeline_ox - 20) + (-1 * dx));
+    } else {
+      newXPosition = 740 - (newXPosition * -1 + 20);
+    }
+  } 
+
+  this.timeline.attr({x: newXPosition});
+  this.label.attr({x: newXPosition});
 
   this.deltaSeconds = this.toSeconds(dx);
   var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
@@ -66,7 +76,7 @@ ZoneMarker.prototype.move = function(dx,dy) {
 }
 
 ZoneMarker.prototype.toSeconds = function(pixels) {
-  var secondsInAPixel = (24 * 3600) / this.timebox.width;
+  var secondsInAPixel = 120; //Calculate this
   return pixels * secondsInAPixel;
 }
 
