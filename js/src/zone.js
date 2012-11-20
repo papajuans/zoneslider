@@ -1,4 +1,5 @@
 var TimeUtil = require('./time-util');
+
 var Zone = function(name, offset) {
   this.name = name;
   this.offset = offset;
