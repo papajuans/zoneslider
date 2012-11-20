@@ -10,10 +10,21 @@ var TimeUtil = {
                   return formatted;
   },
 
-  formatTime: function(date) {
+  formatTime: function(date,format) {
                 var minutes = date.getMinutes();
                 if (minutes < 10) { minutes = "0" + minutes; }
+                var hours = date.getHours();
                 var formatted = date.getHours() + ":" + minutes;
+                if(format == "ampm") {
+                  if(hours == 0) { 
+                    formatted = "12:" + minutes + " AM";
+                  } else if (hours > 12) {
+                    hours -= 12;
+                    formatted = hours + ":" + minutes + " PM";
+                  } else {
+                    formatted = hours + ":" + minutes + " AM";
+                  }
+                }
                 return formatted;
   },
 

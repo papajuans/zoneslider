@@ -10,6 +10,7 @@ var ZoneMarker = function(timeline, zone) {
   this.secondsInAPixel = 1440 * 60 / this.timeline_width;
   this.zone = zone;
   this.time = this.zone.now();
+  this.timeformat = "mil";
   subscribe("drag", function(dx,dy){
     self.move(dx,dy);
   });
@@ -22,6 +23,18 @@ var ZoneMarker = function(timeline, zone) {
   subscribe("reset", function(){
     self.reset();
   });
+  subscribe("redraw", function(){
+    self.rerender();
+  });
+  subscribe("timeformat.ampm", function(){ 
+    self.timeformat = "ampm";
+    self.rerender();
+  });
+  subscribe("timeformat.mil", function(){ 
+    self.timeformat = "mil";
+    self.rerender();
+  });
+
 }
 
 ZoneMarker.prototype.render = function() {
@@ -49,7 +62,7 @@ ZoneMarker.prototype.getXOffset = function() {
 }
 
 ZoneMarker.prototype.getLabelText = function(time) {
-  return this.zone.name + "\n" + TimeUtil.formatTime(time) + "\n" + TimeUtil.formatDate(time);
+  return this.zone.name + "\n" + TimeUtil.formatTime(time,this.timeformat) + "\n" + TimeUtil.formatDate(time);
 }
 
 ZoneMarker.prototype.storePosition = function() {

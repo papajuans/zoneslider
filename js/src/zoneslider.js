@@ -29,15 +29,18 @@ allMarkers.push(nycMarker);
 allMarkers.push(londonMarker);
 allMarkers.push(taipeiMarker);
 
-nycMarker.render();
-londonMarker.render();
-taipeiMarker.render();
-
-//$.each(allMarkers, function() {
- // this.render();
-//});
+$.each(allMarkers, function() {
+ this.render();
+});
 
 $("#reset").click(function() { 
   publish("reset");
 });
 
+$("#am-pm-format").click(function() {
+  publish("timeformat.ampm");
+});
+
+$("#mil-format").click(function() {
+  publish("timeformat.mil");
+});
