@@ -41,7 +41,7 @@ ZoneMarker.prototype.render = function() {
   // Determine x offset based on currentTime
   var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
   var x = this.secondsToPixels(secondsPassed) + this.timeline_startx;
-  this.marker = paper.rect(x, this.timeline_y, 5, this.timeline_height+10).attr({stroke:"#2BBA40", fill: "#2BBA40", opacity: "0.5"});
+  this.marker = paper.rect(x, this.timeline_y, 2, this.timeline_height+10).attr({stroke:"#2BBA40", fill: "#2BBA40", opacity: "0.5"});
   this.label = paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px Arial"});
   this.debug = paper.text(x, 180, this.getXOffset() ).attr({font: "10px Arial"});
   this.wireDragging();

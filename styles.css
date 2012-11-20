@@ -1,8 +1,9 @@
 #zoneslider {
-  border: 1px #ccc solid;
+  border: 1px #bbb solid;
   height: 200px;
   width: 900px;
   top:30%;
   margin:auto;
 }
 body { text-align: center; }
+#controls { margin-bottom: 1em; }

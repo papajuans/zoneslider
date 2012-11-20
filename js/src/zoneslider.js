@@ -10,12 +10,19 @@ var renderHourMarks = function(paper){
   var sixpm_label = paper.text(630,50, "6pm").attr({font: "12px Arial"});
 }
 
+var shadeNight = function(paper) {
+  //TODO Make this dynamic
+  paper.rect(90,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
+  paper.rect(610,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
+}
+
 
 paper = Raphael("zoneslider",900,200);
 timeline = paper.rect(90,40,720,60);
 timeline.attr("stroke", "#ccc");
 
 renderHourMarks(paper);
+shadeNight(paper);
 
 var nyc = new Zone("NYC", -5);
 var nycMarker = new ZoneMarker(timeline, nyc);
