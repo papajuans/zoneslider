@@ -36,10 +36,11 @@ ZoneMarker.prototype.render = function() {
 
 ZoneMarker.prototype.rerender = function() {
   // Determine x offset based on currentTime
-  var secondsPassed = (this.zone.now().getHours() * 60 + this.zone.now().getMinutes()) * 60;
+  var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
   var newX = this.secondsToPixels(secondsPassed) + this.timeline_startx;
-  this.marker.animate({x: newX}, 1000, "bounce");
-  this.label.animate({x: newX, text: this.getLabelText(this.zone.now())},1000, "bounce");
+  this.marker.animate({x: newX }, 1000, "bounce");
+  this.label.animate({x: newX },1000, "bounce");
+  this.label.attr("text", this.getLabelText(this.time));
   this.debug.animate({x: newX},1000, "bounce");
 }
 
