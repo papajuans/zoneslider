@@ -30,16 +30,16 @@ var london = new Zone("London", 0);
 var londonMarker = new ZoneMarker(timeline, london);
 var taipei = new Zone("Taipei", 8);
 var taipeiMarker = new ZoneMarker(timeline, taipei);
+//var berlin = new Zone("Berlin", 1);
+//var berlinMarker = new ZoneMarker(timeline, berlin);
+
 
 var allMarkers = [];
 allMarkers.push(nycMarker);
 allMarkers.push(londonMarker);
 allMarkers.push(taipeiMarker);
-
-$.each(allMarkers, function() {
- this.render();
-});
-
+//allMarkers.push(berlinMarker);
+//
 $("#reset").click(function() { 
   publish("reset");
 });
@@ -51,3 +51,11 @@ $("#am-pm-format").click(function() {
 $("#mil-format").click(function() {
   publish("timeformat.mil");
 });
+
+//function tick() {
+//  publish("tick");
+//}
+
+//window.setInterval(tick, 1000);
+
+

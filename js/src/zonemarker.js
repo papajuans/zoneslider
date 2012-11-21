@@ -10,7 +10,7 @@ var ZoneMarker = function(timeline, zone) {
   this.secondsInAPixel = 1440 * 60 / this.timeline_width;
   this.zone = zone;
   this.time = this.zone.now();
-  this.timeformat = "mil";
+  this.timeformat = "ampm";
   subscribe("drag", function(dx,dy){
     self.move(dx,dy);
   });
@@ -34,15 +34,32 @@ var ZoneMarker = function(timeline, zone) {
     self.timeformat = "mil";
     self.rerender();
   });
+  subscribe("tick", function() {
+    self.addSeconds(1);
+    self.rerender();
+  });
+  subscribe("dump", function() {
+    console.log(self.label.getBBox());
+    console.log(self.marker.getBBox());
+  });
+  subscribe("hover.in", function(fromOffset) {
+    self.calcRelative(fromOffset);
+  });
+  subscribe("hover.out", function() {
+    self.rerender();
+  });
 
+  this._init();
 }
 
-ZoneMarker.prototype.render = function() {
+ZoneMarker.prototype._init= function() {
   // Determine x offset based on currentTime
   var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
   var x = this.secondsToPixels(secondsPassed) + this.timeline_startx;
   this.marker = paper.rect(x, this.timeline_y, 2, this.timeline_height+10).attr({stroke:"#2BBA40", fill: "#2BBA40", opacity: "0.5"});
-  this.label = paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px Arial"});
+  this.label = paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
+  var labelBox =  this.label.getBBox();
+  this.labelBox = paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0"});
   this.debug = paper.text(x, 180, this.getXOffset() ).attr({font: "10px Arial"});
   this.wireDragging();
 }
@@ -54,6 +71,7 @@ ZoneMarker.prototype.rerender = function() {
   this.marker.animate({x: newX }, 1000, "bounce");
   this.label.animate({x: newX },1000, "bounce");
   this.label.attr("text", this.getLabelText(this.time));
+  this.labelBox.attr({x: newX - this.labelBox.attr('width')/2});
   this.debug.animate({x: newX},1000, "bounce");
 }
 
@@ -73,7 +91,16 @@ ZoneMarker.prototype.storePosition = function() {
 
 ZoneMarker.prototype.wireDragging = function() {
   this.marker.drag(this.dragging, this.starting, this.ending, this);
-  this.label.drag(this.dragging, this.starting, this.ending, this);
+  this.labelBox.drag(this.dragging, this.starting, this.ending, this);
+  this.labelBox.hover(this.hoverIn, this.hoverOut, this);
+}
+
+ZoneMarker.prototype.hoverIn = function() {
+  publish("hover.in",[this.zone.offset]);
+}
+
+ZoneMarker.prototype.hoverOut = function() {
+  publish("hover.out");
 }
 
 ZoneMarker.prototype.starting = function() {
@@ -101,6 +128,7 @@ ZoneMarker.prototype.move = function(dx,dy) {
   } 
   this.marker.attr({x: newXPosition});
   this.label.attr({x: newXPosition});
+  this.labelBox.attr({x: newXPosition - this.labelBox.attr('width')/2});
   this.debug.attr({x: newXPosition});
 
   this.deltaSeconds = this.pixelsToSeconds(dx);
@@ -111,14 +139,12 @@ ZoneMarker.prototype.move = function(dx,dy) {
 
 ZoneMarker.prototype.addSeconds = function(seconds) {
   this.time = new Date(this.time.getTime() + seconds * 1000);
-  this.rerender();
 }
 
 ZoneMarker.prototype.reset = function() {
   this.time = this.zone.now();
   this.rerender();
 }
-
 
 ZoneMarker.prototype.pixelsToSeconds = function(pixels) {
   return pixels * this.secondsInAPixel;
@@ -138,6 +164,14 @@ ZoneMarker.prototype.endDrag = function() {
   this.deltaSeconds = 0;
   this.debug.attr({text: "X: " + this.debug.attr("x")});
   this.storePosition();
+}
+
+ZoneMarker.prototype.calcRelative = function(fromOffset) {
+  if(fromOffset != this.zone.offset) {
+    var relative = Math.abs(fromOffset - this.zone.offset);
+    relative = this.zone.offset < fromOffset ? "-" + relative : "+" + relative;
+    this.label.attr({text: this.zone.name + "\n" + relative + " hours"});
+  }
 }
 
 module.exports = ZoneMarker;

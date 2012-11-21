@@ -12,17 +12,19 @@ var TimeUtil = {
 
   formatTime: function(date,format) {
                 var minutes = date.getMinutes();
+                var seconds = date.getSeconds();
                 if (minutes < 10) { minutes = "0" + minutes; }
+                if (seconds < 10) { seconds = "0" + seconds; }
                 var hours = date.getHours();
-                var formatted = date.getHours() + ":" + minutes;
+                var formatted = hours + ":" + minutes + ":" + seconds;
                 if(format == "ampm") {
                   if(hours == 0) { 
-                    formatted = "12:" + minutes + " AM";
+                    formatted = "12:" + minutes +":" + seconds + " AM";
                   } else if (hours > 12) {
                     hours -= 12;
-                    formatted = hours + ":" + minutes + " PM";
+                    formatted = hours + ":" + minutes + ":" + seconds + " PM";
                   } else {
-                    formatted = hours + ":" + minutes + " AM";
+                    formatted = hours + ":" + minutes + ":" + seconds + " AM";
                   }
                 }
                 return formatted;
