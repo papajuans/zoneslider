@@ -172,7 +172,7 @@ ZoneMarker.prototype.endDrag = function() {
 
 ZoneMarker.prototype.calcRelative = function(fromOffset) {
   if(fromOffset != this.zone.offset) {
-    var relative = Math.abs(fromOffset - this.zone.offset);
+    var relative = Math.abs(fromOffset - this.zone.offset) / 3600;
     relative = this.zone.offset < fromOffset ? "-" + relative : "+" + relative;
     this.label.attr({text: this.zone.name + "\n" + relative + " hours"});
   }

@@ -1,8 +1,8 @@
 var TimeUtil = require('./time-util');
 
-var Zone = function(name, offset) {
+var Zone = function(name, offsetInSeconds) {
   this.name = name;
-  this.offset = offset;
+  this.offset = offsetInSeconds;
 };
 
 Zone.prototype.now = function() {

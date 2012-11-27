@@ -1,5 +1,6 @@
 var TimeUtil = {
   ONE_HOUR: 3600000,
+  ONE_MINUTE: 1000,
 
   MONTHS:   ["Jan","Feb", "Mar", "Apr", 
             "May", "Jun", "Jul", "Aug", 
@@ -40,9 +41,9 @@ var TimeUtil = {
                                 now.getUTCSeconds());
   },
 
-  getNowLocalTime: function(offsetInHours) {
+  getNowLocalTime: function(offsetInSeconds) {
                     var utc = this.nowInUtc();
-                    var offsetInMillis = offsetInHours * this.ONE_HOUR;
+                    var offsetInMillis = offsetInSeconds * 1000;
                     var localTime = new Date(utc.getTime() + offsetInMillis);
                     return localTime;
   }
