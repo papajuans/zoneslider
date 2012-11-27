@@ -4,6 +4,15 @@ require 'time'
 require 'tzinfo'
 require 'uri' 
 
+# Monkey patch for testing if a string is a numeric
+# value.
+class String
+  def has_number?
+    #Float(self) != nil rescue false
+    /\d/.match(self) != nil
+  end
+end
+
 cities = SQLite3::Database.new("data/cities.db")
 search_statement = cities.prepare("select * from cities where name LIKE ? order by population desc")
 
@@ -14,7 +23,7 @@ end
 
 get '/utc' do 
   now = Time.now().utc()
-  "{utc_time: #{now}}"
+  "{\"utc_time\": \"#{now}\"}"
 end
 
 # Sample JSON response for ?q=New
@@ -29,10 +38,12 @@ get '/search' do
   city_results = []
   results = search_statement.execute(wildcard_city)
   results.each do |row|
-    tz = TZInfo::Timezone.get(row[2])
+    tz = TZInfo::Timezone.get(row[4])
     offset_in_minutes = tz.current_period.utc_offset
     in_dst = tz.current_period.dst?
-    city_results.push "{\"name\": \"#{row[0]}\", \"offset\": \"#{offset_in_minutes}\", \"inDst\": \"#{in_dst}\"}"
+    code = row[2].has_number? ? row[1] : "#{row[2]}, #{row[1]}"
+    name = "#{row[0]}, #{code}" 
+    city_results.push "{\"name\": \"#{name}\", \"offset\": \"#{offset_in_minutes}\", \"inDst\": \"#{in_dst}\"}"
   end
   "{ \"results\": [" + city_results.join(',') + "]}"
 end
