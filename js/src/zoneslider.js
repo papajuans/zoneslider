@@ -11,7 +11,7 @@ var renderHourMarks = function(paper){
 }
 
 var shadeNight = function(paper) {
-  //TODO Make this dynamic
+  //TODO Make this dynamic?
   paper.rect(90,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
   paper.rect(610,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
 }

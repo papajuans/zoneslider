@@ -5,7 +5,7 @@ require 'tzinfo'
 require 'uri' 
 
 cities = SQLite3::Database.new("data/cities.db")
-search_statement = cities.prepare("select * from cities where name LIKE ?")
+search_statement = cities.prepare("select * from cities where name LIKE ? order by population desc")
 
 # We always return JSON
 after do
