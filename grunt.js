@@ -50,7 +50,7 @@ module.exports = function(grunt) {
       globals: {}
     },
     browserify: {
-      "dist/bundle.js": {
+      "www/dist/bundle.js": {
         entries: ['js/src/**/*.js'],
         prepend: ['<banner:meta.banner>'],
         append: [],
@@ -62,14 +62,10 @@ module.exports = function(grunt) {
         }
       }
     },
-    server: {
-      port: 8080,
-      base: './'
-    },
     uglify: {}
   });
 
   // Default task.
-  grunt.registerTask('default', 'server watch');
+  grunt.registerTask('default', 'browserify watch');
   grunt.loadNpmTasks('grunt-browserify');
 };
