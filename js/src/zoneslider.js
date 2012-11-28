@@ -49,6 +49,11 @@ function plotCity(name, offset) {
   var zone = new Zone(name, offset);
   var marker = new ZoneMarker(timeline, zone);
   allMarkers.push(marker);
+
+  //TODO Handle when cities will render on top of
+  //each other
+  //
+  //TODO handle when cities are in the same zone
 }
 
 $("#city-search").typeahead({
@@ -76,11 +81,4 @@ $("#city-search").typeahead({
     }
   }
 });
-
-//function tick() {
-//  publish("tick");
-//}
-
-//window.setInterval(tick, 1000);
-
 
