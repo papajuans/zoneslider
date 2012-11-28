@@ -24,22 +24,13 @@ timeline.attr("stroke", "#ccc");
 renderHourMarks(paper);
 shadeNight(paper);
 
-var nyc = new Zone("NYC", -18000);
-var nycMarker = new ZoneMarker(timeline, nyc);
-var london = new Zone("London", 0);
-var londonMarker = new ZoneMarker(timeline, london);
-var taipei = new Zone("Taipei", 28800);
-var taipeiMarker = new ZoneMarker(timeline, taipei);
-//var berlin = new Zone("Berlin", 1);
-//var berlinMarker = new ZoneMarker(timeline, berlin);
-
-
 var allMarkers = [];
-allMarkers.push(nycMarker);
-allMarkers.push(londonMarker);
-allMarkers.push(taipeiMarker);
-//allMarkers.push(berlinMarker);
-//
+
+plotCity("NYC", -18000);
+plotCity("London", 0);
+plotCity("Taipei", 28800);
+
+
 $("#reset").click(function() { 
   publish("reset");
 });
@@ -50,6 +41,40 @@ $("#am-pm-format").click(function() {
 
 $("#mil-format").click(function() {
   publish("timeformat.mil");
+});
+
+var searchResults = [];
+
+function plotCity(name, offset) {
+  var zone = new Zone(name, offset);
+  var marker = new ZoneMarker(timeline, zone);
+  allMarkers.push(marker);
+}
+
+$("#city-search").typeahead({
+  source: function(query, process) {
+    return $.get('/search', {q: query}, function(data) {
+      searchResults = data.results;
+      var names = [];
+      for(var i = 0; i < data.results.length; i++) {
+        names.push(data.results[i].name + ", " + data.results[i].country);
+      }
+      return process(names);
+    });
+  },
+  minLength: 3,
+  updater: function(item) {
+    var splitAt = item.indexOf(",");
+    var name = item.substring(0, splitAt);
+    var country = item.substring(splitAt+2);
+    for(var i = 0; i < searchResults.length; i++) {
+      var candidate = searchResults[i];
+      if(name == candidate.name && country == candidate.country) {
+        console.log("plotting " + candidate.name);
+        plotCity(candidate.name, candidate.offset);
+      }
+    }
+  }
 });
 
 //function tick() {

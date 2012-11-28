@@ -51,7 +51,7 @@ get '/search' do
       c = { name: name, offset: offset_in_minutes, dstOffset: offset_in_minutes, inDst: in_dst, country: code }
       city_results.push c
     end
-    json :results => city_results
+    return json :results => city_results
   end
   json :error => "No 'q' query parameter for city search"
 end
