@@ -50,7 +50,7 @@ module.exports = function(grunt) {
       globals: {}
     },
     browserify: {
-      "www/dist/bundle.js": {
+      "public/dist/bundle.js": {
         entries: ['js/src/**/*.js'],
         prepend: ['<banner:meta.banner>'],
         append: [],

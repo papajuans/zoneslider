@@ -17,9 +17,6 @@ end
 cities = SQLite3::Database.new("data/cities.db")
 search_statement = cities.prepare("select * from cities where name LIKE ? order by population desc")
 
-# Host static directories
-set :public_folder, File.dirname(__FILE__) + '/www'
-
 # Simulate courtesy redirect
 get '/' do
   redirect('/index.html')
