@@ -58,7 +58,7 @@ function plotCity(name, offset) {
 
 $("#city-search").typeahead({
   source: function(query, process) {
-    return $.get('/search', {q: query}, function(data) {
+    return $.get('search', {q: query}, function(data) {
       searchResults = data.results;
       var names = [];
       for(var i = 0; i < data.results.length; i++) {

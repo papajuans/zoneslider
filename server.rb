@@ -17,6 +17,12 @@ end
 cities = SQLite3::Database.new("data/cities.db")
 search_statement = cities.prepare("select * from cities where name LIKE ? order by population desc")
 
+before do
+  logger.info request.path_info
+  logger.info request.fullpath
+  logger.info request.url
+end
+
 # Simulate courtesy redirect
 get '/' do
   redirect('/index.html')
