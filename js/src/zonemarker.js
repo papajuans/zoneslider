@@ -9,7 +9,6 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
   this.timeline_endx = this.timeline_startx + this.timeline_width;
   this.secondsInAPixel = 1440 * 60 / this.timeline_width;
   this.zone = zone;
-  console.log(this.zone.name + " with base time of " + TimeUtil.formatTime(utc_time));
   this.time = TimeUtil.addSeconds(utc_time, this.zone.offset);
   this.timeformat = timeformat;
   subscribe("drag", function(dx,dy){
@@ -44,7 +43,9 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
     console.log(self.marker.getBBox());
   });
   subscribe("hover.in", function(fromOffset) {
-    self.calcRelative(fromOffset);
+    if(!self.isDragging) {
+      self.calcRelative(fromOffset);
+    }
   });
   subscribe("hover.out", function() {
     if(!self.isDragging) {
@@ -71,10 +72,10 @@ ZoneMarker.prototype.rerender = function() {
   // Determine x offset based on currentTime
   var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
   var newX = this.secondsToPixels(secondsPassed) + this.timeline_startx;
-  this.marker.animate({x: newX }, 1000, "bounce");
-  this.label.animate({x: newX },1000, "bounce");
+  this.marker.animate({x: newX }, 800, "bounce");
+  this.label.animate({x: newX },800, "bounce");
   this.label.attr("text", this.getLabelText(this.time));
-  this.labelBox.animate({x: newX - this.labelBox.attr('width')/2},1000,"bounce");
+  this.labelBox.animate({x: newX - this.labelBox.attr('width')/2},800,"bounce");
   //this.debug.animate({x: newX},1000, "bounce");
 };
 

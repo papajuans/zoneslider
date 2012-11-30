@@ -7,3 +7,8 @@
 }
 body { text-align: center; }
 #controls { margin-bottom: 1em; }
+.dropdown-menu .active > a,
+.dropdown-menu .active > a:hover {
+  background-color: #ccc;
+  background-image: none;
+}
