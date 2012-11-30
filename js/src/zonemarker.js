@@ -1,6 +1,6 @@
-var TimeUtil = require('./time-util')
+var TimeUtil = require('./time-util');
 
-var ZoneMarker = function(timeline, zone) {
+var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
   var self = this;
   this.timeline_y = timeline.attr("y");
   this.timeline_startx = timeline.attr("x");
@@ -9,8 +9,9 @@ var ZoneMarker = function(timeline, zone) {
   this.timeline_endx = this.timeline_startx + this.timeline_width;
   this.secondsInAPixel = 1440 * 60 / this.timeline_width;
   this.zone = zone;
-  this.time = this.zone.now();
-  this.timeformat = "ampm";
+  console.log(this.zone.name + " with base time of " + TimeUtil.formatTime(utc_time));
+  this.time = TimeUtil.addSeconds(utc_time, this.zone.offset);
+  this.timeformat = timeformat;
   subscribe("drag", function(dx,dy){
     self.move(dx,dy);
   });
@@ -75,6 +76,12 @@ ZoneMarker.prototype.rerender = function() {
   this.label.attr("text", this.getLabelText(this.time));
   this.labelBox.animate({x: newX - this.labelBox.attr('width')/2},1000,"bounce");
   //this.debug.animate({x: newX},1000, "bounce");
+};
+
+//Express the time this marker represents in UTC
+ZoneMarker.prototype.utcTime = function() {
+  console.log(this.zone.name + " time is " + this.time);
+  return TimeUtil.addSeconds(this.time, -1 * this.zone.offset);
 };
 
 ZoneMarker.prototype.getXOffset = function() {

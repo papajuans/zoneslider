@@ -7,7 +7,7 @@ var TimeUtil = {
             "Sept", "Oct", "Nov", "Dec"],
 
   formatDate : function(date) {
-                  var formatted = this.MONTHS[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+                  var formatted = this.MONTHS[date.getMonth()] + " " + date.getDate();
                   return formatted;
   },
 
@@ -31,6 +31,10 @@ var TimeUtil = {
                 return formatted;
   },
 
+  addSeconds: function(date,seconds) {
+               return new Date(date.getTime() + seconds * 1000);
+  },
+  
   nowInUtc: function() {
                 var now = new Date();
                 return new Date(now.getUTCFullYear(), 

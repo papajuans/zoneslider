@@ -1,5 +1,6 @@
-var ZoneMarker = require('./zonemarker')
-var Zone = require('./zone')
+var ZoneMarker = require('./zonemarker');
+var Zone = require('./zone');
+var TimeUtil = require('./time-util');
 
 var renderHourMarks = function(paper){ 
   var sixam = paper.path("M270,60L270,100");
@@ -45,7 +46,9 @@ var searchResults = [];
 
 function plotCity(name, offset) {
   var zone = new Zone(name, offset);
-  var marker = new ZoneMarker(timeline, zone);
+  var baseTime = allMarkers.length > 0 ? allMarkers[0].utcTime() : TimeUtil.nowInUtc();
+  var timeformat = allMarkers.length > 0 ? allMarkers[0].timeformat  : "ampm";
+  var marker = new ZoneMarker(timeline, zone, baseTime,timeformat);
   var markerAbove = null;
   for(var i = 0; i < allMarkers.length; i++) {
     var existingMarker = allMarkers[i];
