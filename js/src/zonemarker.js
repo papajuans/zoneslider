@@ -58,7 +58,7 @@ ZoneMarker.prototype._init= function() {
   // Determine x offset based on currentTime
   var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
   var x = this.secondsToPixels(secondsPassed) + this.timeline_startx;
-  this.marker = paper.rect(x, this.timeline_y, 2, this.timeline_height+10).attr({stroke:"#2BBA40", fill: "#2BBA40", opacity: "0.5"});
+  this.marker = paper.rect(x, this.timeline_y, 1, this.timeline_height+6).attr({stroke:"#A1EB9B", fill: "#A1EB9B", opacity: "0.5"});
   this.label = paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
@@ -176,6 +176,12 @@ ZoneMarker.prototype.calcRelative = function(fromOffset) {
     relative = this.zone.offset < fromOffset ? "-" + relative : "+" + relative;
     this.label.attr({text: this.zone.name + "\n" + relative + " hours"});
   }
+};
+
+ZoneMarker.prototype.moveDown = function(pixels) {
+  this.marker.attr({height: this.marker.attr('height') + pixels});//, 500, "backOut");
+  this.label.attr({y: this.label.attr('y') + pixels});//, 500, "backOut");
+  this.labelBox.attr({y: this.labelBox.attr('y') + pixels});//, 500,"backOut");
 };
 
 module.exports = ZoneMarker;

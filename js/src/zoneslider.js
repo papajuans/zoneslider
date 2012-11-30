@@ -16,8 +16,7 @@ var shadeNight = function(paper) {
   paper.rect(610,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
 }
 
-
-paper = Raphael("zoneslider",900,200);
+paper = Raphael("zoneslider",900,600);
 timeline = paper.rect(90,40,720,60);
 timeline.attr("stroke", "#ccc");
 
@@ -29,7 +28,6 @@ var allMarkers = [];
 plotCity("NYC", -18000);
 plotCity("London", 0);
 plotCity("Taipei", 28800);
-
 
 $("#reset").click(function() { 
   publish("reset");
@@ -48,11 +46,22 @@ var searchResults = [];
 function plotCity(name, offset) {
   var zone = new Zone(name, offset);
   var marker = new ZoneMarker(timeline, zone);
+  var markerAbove = null;
+  for(var i = 0; i < allMarkers.length; i++) {
+    var existingMarker = allMarkers[i];
+    var existingBBox = existingMarker.labelBox.getBBox();
+    var newMarkerBBox = marker.labelBox.getBBox();
+    console.log("Comparing " + existingMarker.zone.name + " with " + marker.zone.name);
+    if(Raphael.isBBoxIntersect(newMarkerBBox, existingBBox)){
+      console.log("Intersection");
+      markerAbove = existingBBox;
+      var pixelsToMoveDown = markerAbove['height'] + 10;
+      marker.moveDown(80);
+    }
+  }
+
   allMarkers.push(marker);
 
-  //TODO Handle when cities will render on top of
-  //each other
-  //
   //TODO handle when cities are in the same zone
 }
 
