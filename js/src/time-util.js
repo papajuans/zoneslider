@@ -21,6 +21,8 @@ var TimeUtil = {
                 if(format == "ampm") {
                   if(hours == 0) { 
                     formatted = "12:" + minutes +":" + seconds + " AM";
+                  } else if (hours == 12) {
+                    formatted = hours + ":" + minutes + ":" + seconds + " PM";
                   } else if (hours > 12) {
                     hours -= 12;
                     formatted = hours + ":" + minutes + ":" + seconds + " PM";
@@ -43,6 +45,15 @@ var TimeUtil = {
                                 now.getUTCHours(), 
                                 now.getUTCMinutes(), 
                                 now.getUTCSeconds());
+  },
+
+  todayNoonInUtc: function() {
+                    var now = new Date();
+                    var noonInUtc = new Date(now.getUTCFullYear(),
+                                            now.getUTCMonth(),
+                                            now.getUTCDate(),
+                                            12,0,0);
+                    return noonInUtc;
   },
 
   getNowLocalTime: function(offsetInSeconds) {

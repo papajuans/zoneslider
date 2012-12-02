@@ -42,7 +42,7 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
     console.log(self.label.getBBox());
     console.log(self.marker.getBBox());
   });
-  subscribe("hover.in", function(fromOffset) {
+  /*subscribe("hover.in", function(fromOffset) {
     if(!self.isDragging) {
       self.calcRelative(fromOffset);
     }
@@ -51,20 +51,20 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
     if(!self.isDragging) {
       self.rerender();
     }
-  });
-
+  });*/
   this._init();
 };
 
 ZoneMarker.prototype._init= function() {
   // Determine x offset based on currentTime
-  var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
-  var x = this.secondsToPixels(secondsPassed) + this.timeline_startx;
-  this.marker = paper.rect(x, this.timeline_y, 1, this.timeline_height+6).attr({stroke:"#A1EB9B", fill: "#A1EB9B", opacity: "0.5"});
+  var secondsFromNoonUtc = (this.time.getTime() - TimeUtil.todayNoonInUtc().getTime()) / 1000;
+  //var secondsPassedToday = this.time.getHours() * 3600 + this.time.getMinutes() * 60 + this.time.getSeconds();
+  var centerPoint = this.timeline_startx + this.timeline_width / 2;
+  var x = centerPoint + this.secondsToPixels(secondsFromNoonUtc);
+  this.marker = paper.rect(x, this.timeline_y, 1, this.timeline_height+6).attr({stroke:"#A1EB9B", fill: "#A1EB9B"});
   this.label = paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
-  //this.debug = paper.text(x, 180, this.getXOffset() ).attr({font: "10px Arial"});
   this.wireDragging();
 };
 
@@ -76,7 +76,6 @@ ZoneMarker.prototype.rerender = function() {
   this.label.animate({x: newX },800, "bounce");
   this.label.attr("text", this.getLabelText(this.time));
   this.labelBox.animate({x: newX - this.labelBox.attr('width')/2},800,"bounce");
-  //this.debug.animate({x: newX},1000, "bounce");
 };
 
 //Express the time this marker represents in UTC
@@ -96,12 +95,9 @@ ZoneMarker.prototype.getLabelText = function(time) {
 ZoneMarker.prototype.storePosition = function() {
   this.marker_ox = this.marker.attr("x");
   this.label_ox = this.label.attr("x");
-  //this.debug_ox = this.debug.attr("x");
 };
 
 ZoneMarker.prototype.wireDragging = function() {
-  this.marker.drag(this.dragging, this.starting, this.ending, this);
-  this.labelBox.drag(this.dragging, this.starting, this.ending, this);
   this.labelBox.hover(this.hoverIn, this.hoverOut, this);
 };
 
@@ -128,24 +124,9 @@ ZoneMarker.prototype.dragging = function(dx,dy) {
 };
 
 ZoneMarker.prototype.move = function(dx,dy) {
-  var newXPosition = this.marker_ox + dx;
-
-  // Handle wrapping
-  if(newXPosition > this.timeline_endx) {
-    newXPosition = newXPosition - this.timeline_width;
-  } else if(newXPosition < this.timeline_startx) {
-    var distanceFromTimeline = this.timeline_startx - newXPosition;
-    newXPosition = this.timeline_endx - distanceFromTimeline;
-  } 
-  this.marker.attr({x: newXPosition});
-  this.label.attr({x: newXPosition});
-  this.labelBox.attr({x: newXPosition - this.labelBox.attr('width')/2});
-  //this.debug.attr({x: newXPosition});
-
   this.deltaSeconds = this.pixelsToSeconds(dx);
   var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
   this.label.attr({text: this.getLabelText(someTime)});
-  //this.debug.attr({text: "X: " + newXPosition + ", ∆x: " + dx});
 };
 
 ZoneMarker.prototype.addSeconds = function(seconds) {
@@ -173,7 +154,6 @@ ZoneMarker.prototype.endDrag = function() {
   this.label.attr({opacity: 1});
   this.time = new Date(this.time.getTime() + this.deltaSeconds*1000);
   this.deltaSeconds = 0;
-//  this.debug.attr({text: "X: " + this.debug.attr("x")});
   this.storePosition();
   this.isDragging = false;
 };

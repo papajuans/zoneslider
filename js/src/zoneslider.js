@@ -1,8 +1,9 @@
 var ZoneMarker = require('./zonemarker');
 var Zone = require('./zone');
 var TimeUtil = require('./time-util');
+var TimelineMarker = require('./TimelineMarker');
 
-var renderHourMarks = function(paper){ 
+var dayMarks = function(paper){ 
   var sixam = paper.path("M270,60L270,100");
   var sixam_label = paper.text(270,50,"6am").attr({font: "12px Arial"});
   var noon = paper.path("M450,60,L450,100");
@@ -11,18 +12,52 @@ var renderHourMarks = function(paper){
   var sixpm_label = paper.text(630,50, "6pm").attr({font: "12px Arial"});
 }
 
-var shadeNight = function(paper) {
-  //TODO Make this dynamic?
-  paper.rect(90,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
-  paper.rect(610,40,200,60).attr({stroke:"#888", fill: "#888", opacity: "0.5"});
+paper = Raphael("zoneslider",900,600);
+today = paper.rect(300,40,300,60);
+today.attr({"stroke": "#aaa", "fill": "#fff"});
+yesterday = paper.rect(000,40,300,60);
+yesterday.attr({"stroke": "#aaa", "fill": "#fff"});
+tomorrow= paper.rect(600,40,300,60);
+tomorrow.attr({"stroke": "#aaa", "fill": "#fff"});
+
+timeline_dragger = paper.rect(0,40, 900, 60);
+timeline_dragger.attr({"fill": "#00ff00", "opacity":0.1});
+
+var now = new Date();
+var todayDate = new Date(now.getUTCFullYear(), 
+                                now.getUTCMonth(), 
+                                now.getUTCDate(),0,0,0);
+
+var today_marker = new TimelineMarker(today,todayDate);
+var yesterday_marker = new TimelineMarker(yesterday, TimeUtil.addSeconds(todayDate, -86400));
+var tomorrow_marker = new TimelineMarker(tomorrow, TimeUtil.addSeconds(todayDate, 86400));
+
+//renderHourMarks(paper);
+//shadeNight(paper);
+
+function timeline_drag_start() {
+  console.log("timeline drag start");
+  publish("drag.start");
 }
 
-paper = Raphael("zoneslider",900,600);
-timeline = paper.rect(90,40,720,60);
-timeline.attr("stroke", "#ccc");
+function timeline_drag_end() {
+  //Reset the invisible drag box
+  //timeline.attr({x:0});
+  console.log("timeline drag end");
+  publish("drag.end");
+}
 
-renderHourMarks(paper);
-shadeNight(paper);
+function timeline_dragging(dx,dy) {
+  moveDayMarkers(dx);
+  // Invert dx before we publish so that the movement is more natural:
+  // if I drag right (positive dx), I should be going back in time.
+  publish("drag", [-1*dx,dy]);
+};
+
+function moveDayMarkers(dx) {
+}
+
+timeline_dragger.drag(timeline_dragging, timeline_drag_start, timeline_drag_end);
 
 var allMarkers = [];
 
@@ -48,7 +83,7 @@ function plotCity(name, offset) {
   var zone = new Zone(name, offset);
   var baseTime = allMarkers.length > 0 ? allMarkers[0].utcTime() : TimeUtil.nowInUtc();
   var timeformat = allMarkers.length > 0 ? allMarkers[0].timeformat  : "ampm";
-  var marker = new ZoneMarker(timeline, zone, baseTime,timeformat);
+  var marker = new ZoneMarker(today, zone, baseTime,timeformat);
   var markerAbove = null;
   for(var i = 0; i < allMarkers.length; i++) {
     var existingMarker = allMarkers[i];
