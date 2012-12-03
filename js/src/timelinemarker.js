@@ -31,26 +31,19 @@ TimelineMarker.prototype._init = function() {
 
   //Draw hour ticks
   var sixHoursInPixels = this.secondsToPixels(6 * 60 * 60);
+
+  this._drawTickMark(sixHoursInPixels, "6am");
+  this._drawTickMark(sixHoursInPixels*2, "noon");
+  this._drawTickMark(sixHoursInPixels*3, "6pm");
+};
+
+TimelineMarker.prototype._drawTickMark = function(x_offset, label) {
   var y = this.timeline_y + 35;
   var drawHeight = this.timeline_height - 45;
-
-  var sixam_x = this.timeline_startx + sixHoursInPixels;
-  var sixam_line = paper.rect(sixam_x,y+10,1,drawHeight).attr({stroke:"#888"});
-  var sixam_label = paper.text(sixam_x,y,"6am").attr({font: "12px Georgia,serif"});
-  this._rememberElement(sixam_line);
-  this._rememberElement(sixam_label);
-
-  var noon_x = this.timeline_startx + sixHoursInPixels * 2;
-  var noon_line = paper.rect(noon_x,y+10,1,drawHeight).attr({stroke:"#888"});
-  var noon_label = paper.text(noon_x,y,"noon").attr({font: "12px Georgia,serif"});
-  this._rememberElement(noon_line);
-  this._rememberElement(noon_label);
-
-  var sixpm_x = this.timeline_startx + sixHoursInPixels * 3;
-  var sixpm_line = paper.rect(sixpm_x,y+10,1,drawHeight).attr({stroke:"#888"});
-  var sixpm_label = paper.text(sixpm_x,y,"6pm").attr({font: "12px Georgia,serif"});
-  this._rememberElement(sixpm_line);
-  this._rememberElement(sixpm_label);
+  var line = paper.rect(this.timeline_startx + x_offset,y+10,1,drawHeight).attr({stroke:"#888"});
+  var label = paper.text(this.timeline_startx + x_offset,y,label).attr({font: "12px Georgia,serif"});
+  this._rememberElement(line);
+  this._rememberElement(label);
 };
 
 TimelineMarker.prototype._rememberElement = function(raphaelElement) {
