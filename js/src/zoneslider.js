@@ -1,7 +1,7 @@
 var ZoneMarker = require('./zonemarker');
 var Zone = require('./zone');
 var TimeUtil = require('./time-util');
-var TimelineMarker = require('./TimelineMarker');
+var TimelineMarker = require('./timelinemarker');
 
 var dayMarks = function(paper){ 
   var sixam = paper.path("M270,60L270,100");
@@ -21,7 +21,7 @@ tomorrow= paper.rect(600,40,300,60);
 tomorrow.attr({"stroke": "#aaa", "fill": "#fff"});
 
 timeline_dragger = paper.rect(0,40, 900, 60);
-timeline_dragger.attr({"fill": "#00ff00", "opacity":0.1});
+timeline_dragger.attr({"fill": "#00ff00", "opacity":0});
 
 var now = new Date();
 var todayDate = new Date(now.getUTCFullYear(), 
@@ -48,14 +48,10 @@ function timeline_drag_end() {
 }
 
 function timeline_dragging(dx,dy) {
-  moveDayMarkers(dx);
   // Invert dx before we publish so that the movement is more natural:
   // if I drag right (positive dx), I should be going back in time.
-  publish("drag", [-1*dx,dy]);
+  publish("drag", [dx,dy]);
 };
-
-function moveDayMarkers(dx) {
-}
 
 timeline_dragger.drag(timeline_dragging, timeline_drag_start, timeline_drag_end);
 

@@ -89,7 +89,7 @@ ZoneMarker.prototype.getXOffset = function() {
 };
 
 ZoneMarker.prototype.getLabelText = function(time) {
-  return this.zone.name + "\n" + TimeUtil.formatTime(time,this.timeformat) + "\n" + TimeUtil.formatDate(time);
+  return this.zone.name + "\n" + TimeUtil.formatTime(time,this.timeformat);
 };
 
 ZoneMarker.prototype.storePosition = function() {
@@ -124,6 +124,8 @@ ZoneMarker.prototype.dragging = function(dx,dy) {
 };
 
 ZoneMarker.prototype.move = function(dx,dy) {
+  // Invert dx; if we drag to the left(negative dx), time goes up and vice versa
+  var dx = -1 * dx;
   this.deltaSeconds = this.pixelsToSeconds(dx);
   var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
   this.label.attr({text: this.getLabelText(someTime)});
