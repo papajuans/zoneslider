@@ -2,12 +2,12 @@ var TimeUtil = {
   ONE_HOUR: 3600000,
   ONE_MINUTE: 1000,
 
-  MONTHS:   ["Jan","Feb", "Mar", "Apr", 
-            "May", "Jun", "Jul", "Aug", 
-            "Sept", "Oct", "Nov", "Dec"],
+  MONTHS_SHORT:   ["Jan","Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
+  MONTHS: ['January','February','March','April','May','June', 'July','August','September','October','November','December'],
+  DAYS: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 
   formatDate : function(date) {
-                  var formatted = this.MONTHS[date.getMonth()] + " " + date.getDate();
+                  var formatted = this.DAYS[date.getDay()] + ", " + this.MONTHS[date.getMonth()] + " " + date.getDate();
                   return formatted;
   },
 

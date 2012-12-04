@@ -1,10 +1,12 @@
 var TimeUtil = require('./time-util');
 
-var TimelineMarker = function(timeline, utc_time) {
+var DayBox = function(x_pos, utc_time) {
   var self = this;
   this.elements = [];
   this.elements_ox = [];
   this.time = utc_time;
+  var timeline = paper.rect(x_pos,40,300,60).attr({"stroke": "#aaa", "fill": "#fff"});
+  this.timeline = timeline;
   this._rememberElement(timeline);
   this.timeline_startx = timeline.attr("x");
   this.timeline_width = timeline.attr("width");
@@ -24,20 +26,20 @@ var TimelineMarker = function(timeline, utc_time) {
 
 };
 
-TimelineMarker.prototype._init = function() {
+DayBox.prototype._init = function() {
+
   var x = this.timeline_startx + this.timeline_width/2;
-  var label = paper.text(x, 60, TimeUtil.formatDate(this.time)).attr({font: "18px Georgia,serif",fill:"#222"});
+  var label = paper.text(x, 55, TimeUtil.formatDate(this.time)).attr({font: "18px Georgia,serif",fill:"#222"});
   this._rememberElement(label);
 
   //Draw hour ticks
   var sixHoursInPixels = this.secondsToPixels(6 * 60 * 60);
-
   this._drawTickMark(sixHoursInPixels, "6am");
   this._drawTickMark(sixHoursInPixels*2, "noon");
   this._drawTickMark(sixHoursInPixels*3, "6pm");
 };
 
-TimelineMarker.prototype._drawTickMark = function(x_offset, label) {
+DayBox.prototype._drawTickMark = function(x_offset, label) {
   var y = this.timeline_y + 35;
   var drawHeight = this.timeline_height - 45;
   var line = paper.rect(this.timeline_startx + x_offset,y+10,1,drawHeight).attr({stroke:"#888"});
@@ -46,29 +48,29 @@ TimelineMarker.prototype._drawTickMark = function(x_offset, label) {
   this._rememberElement(label);
 };
 
-TimelineMarker.prototype._rememberElement = function(raphaelElement) {
+DayBox.prototype._rememberElement = function(raphaelElement) {
   this.elements.push(raphaelElement);
 };
 
-TimelineMarker.prototype.pixelsToSeconds = function(pixels) {
+DayBox.prototype.pixelsToSeconds = function(pixels) {
   return pixels * this.secondsInAPixel;
 };
 
-TimelineMarker.prototype.secondsToPixels = function(seconds) {
+DayBox.prototype.secondsToPixels = function(seconds) {
   return seconds / this.secondsInAPixel;
 };
 
-TimelineMarker.prototype.startDrag = function() {
+DayBox.prototype.startDrag = function() {
   this.isDragging = true;
   this.storePosition();
 };
 
-TimelineMarker.prototype.endDrag = function() { 
+DayBox.prototype.endDrag = function() { 
   this.isDragging = false;
   this.storePosition();
 };
 
-TimelineMarker.prototype.move = function(dx,dy) {
+DayBox.prototype.move = function(dx,dy) {
   var that = this;
   $.each(this.elements, function(index,element) {
     var ox = that.elements_ox[index];
@@ -76,7 +78,7 @@ TimelineMarker.prototype.move = function(dx,dy) {
   });
 };
 
-TimelineMarker.prototype.storePosition = function() {
+DayBox.prototype.storePosition = function() {
   this.elements_ox = [];
   var that = this;
   $.each(this.elements, function(index, element) {
@@ -84,4 +86,4 @@ TimelineMarker.prototype.storePosition = function() {
   });
 };
 
-module.exports = TimelineMarker;
+module.exports = DayBox;

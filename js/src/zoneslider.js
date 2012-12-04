@@ -1,59 +1,38 @@
 var ZoneMarker = require('./zonemarker');
 var Zone = require('./zone');
 var TimeUtil = require('./time-util');
-var TimelineMarker = require('./timelinemarker');
-
-var dayMarks = function(paper){ 
-  var sixam = paper.path("M270,60L270,100");
-  var sixam_label = paper.text(270,50,"6am").attr({font: "12px Arial"});
-  var noon = paper.path("M450,60,L450,100");
-  var non_label = paper.text(450,50, "noon").attr({font: "12px Arial"});
-  var sixpm = paper.path("M630,60,L630,100");
-  var sixpm_label = paper.text(630,50, "6pm").attr({font: "12px Arial"});
-}
+var DayBox = require('./daybox');
 
 paper = Raphael("zoneslider",900,600);
-today = paper.rect(300,40,300,60);
-today.attr({"stroke": "#aaa", "fill": "#fff"});
-yesterday = paper.rect(000,40,300,60);
-yesterday.attr({"stroke": "#aaa", "fill": "#fff"});
-tomorrow= paper.rect(600,40,300,60);
-tomorrow.attr({"stroke": "#aaa", "fill": "#fff"});
-
-timeline_dragger = paper.rect(0,40, 900, 60);
-timeline_dragger.attr({"fill": "#00ff00", "opacity":0});
 
 var now = new Date();
 var todayDate = new Date(now.getUTCFullYear(), 
                                 now.getUTCMonth(), 
                                 now.getUTCDate(),0,0,0);
 
-var today_marker = new TimelineMarker(today,todayDate);
-var yesterday_marker = new TimelineMarker(yesterday, TimeUtil.addSeconds(todayDate, -86400));
-var tomorrow_marker = new TimelineMarker(tomorrow, TimeUtil.addSeconds(todayDate, 86400));
+var todayMarker = new DayBox(300,todayDate);
+var yesterdayMarker = new DayBox(0, TimeUtil.addSeconds(todayDate, -86400));
+var tomorrowMarker = new DayBox(600, TimeUtil.addSeconds(todayDate, 86400));
 
-//renderHourMarks(paper);
-//shadeNight(paper);
-
-function timeline_drag_start() {
+function timelineDrag_start() {
   console.log("timeline drag start");
   publish("drag.start");
 }
 
-function timeline_drag_end() {
-  //Reset the invisible drag box
-  //timeline.attr({x:0});
+function timelineDrag_end() {
   console.log("timeline drag end");
   publish("drag.end");
 }
 
-function timeline_dragging(dx,dy) {
+function timelineDragging(dx,dy) {
   // Invert dx before we publish so that the movement is more natural:
   // if I drag right (positive dx), I should be going back in time.
   publish("drag", [dx,dy]);
 };
 
-timeline_dragger.drag(timeline_dragging, timeline_drag_start, timeline_drag_end);
+timelineDragger = paper.rect(0,40, 900, 60);
+timelineDragger.attr({"fill": "#fff", "opacity":0});
+timelineDragger.drag(timelineDragging, timelineDrag_start, timelineDrag_end);
 
 var allMarkers = [];
 
@@ -79,20 +58,32 @@ function plotCity(name, offset) {
   var zone = new Zone(name, offset);
   var baseTime = allMarkers.length > 0 ? allMarkers[0].utcTime() : TimeUtil.nowInUtc();
   var timeformat = allMarkers.length > 0 ? allMarkers[0].timeformat  : "ampm";
-  var marker = new ZoneMarker(today, zone, baseTime,timeformat);
-  var markerAbove = null;
-  for(var i = 0; i < allMarkers.length; i++) {
-    var existingMarker = allMarkers[i];
-    var existingBBox = existingMarker.labelBox.getBBox();
+  var marker = new ZoneMarker(todayMarker.timeline, zone, baseTime, timeformat);
+  var isColliding = true;
+  var step = 60;
+  // Dumb overlap resolution: keep moving the marker down until you don't hit shit
+  while(isColliding) {
     var newMarkerBBox = marker.labelBox.getBBox();
-    console.log("Comparing " + existingMarker.zone.name + " with " + marker.zone.name);
-    if(Raphael.isBBoxIntersect(newMarkerBBox, existingBBox)){
-      console.log("Intersection");
-      markerAbove = existingBBox;
-      var pixelsToMoveDown = markerAbove['height'] + 10;
-      marker.moveDown(80);
+
+    if(allMarkers.length == 0) {
+      break;
     }
+
+    $.each(allMarkers, function(index, existingMarker) {
+      var existingBBox = existingMarker.labelBox.getBBox();
+      if(Raphael.isBBoxIntersect(newMarkerBBox, existingBBox)){
+        isColliding = true;
+        marker.moveDown(step);
+        // collision, break out of $.each and move down 
+        return false;
+      } else {
+        isColliding = false;
+      }
+    });
+
   }
+
+  console.log(marker.zone.name + " y is " + marker.labelBox.attr("y"));
 
   allMarkers.push(marker);
 

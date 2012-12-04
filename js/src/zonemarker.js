@@ -61,7 +61,7 @@ ZoneMarker.prototype._init= function() {
   //var secondsPassedToday = this.time.getHours() * 3600 + this.time.getMinutes() * 60 + this.time.getSeconds();
   var centerPoint = this.timeline_startx + this.timeline_width / 2;
   var x = centerPoint + this.secondsToPixels(secondsFromNoonUtc);
-  this.marker = paper.rect(x, this.timeline_y, 1, this.timeline_height+6).attr({stroke:"#A1EB9B", fill: "#A1EB9B"});
+  this.marker = paper.rect(x, this.timeline_y, 1, this.timeline_height+16).attr({stroke:"#A1EB9B", fill: "#A1EB9B"});
   this.label = paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
@@ -80,7 +80,6 @@ ZoneMarker.prototype.rerender = function() {
 
 //Express the time this marker represents in UTC
 ZoneMarker.prototype.utcTime = function() {
-  console.log(this.zone.name + " time is " + this.time);
   return TimeUtil.addSeconds(this.time, -1 * this.zone.offset);
 };
 
