@@ -1,7 +1,7 @@
 var ZoneMarker = require('./zonemarker');
 var Zone = require('./zone');
 var TimeUtil = require('./time-util');
-var DayBox = require('./daybox');
+var Timeline = require('./timeline');
 
 paper = Raphael("zoneslider",900,600);
 
@@ -10,9 +10,7 @@ var todayDate = new Date(now.getUTCFullYear(),
                                 now.getUTCMonth(), 
                                 now.getUTCDate(),0,0,0);
 
-var todayMarker = new DayBox(300,todayDate);
-var yesterdayMarker = new DayBox(0, TimeUtil.addSeconds(todayDate, -86400));
-var tomorrowMarker = new DayBox(600, TimeUtil.addSeconds(todayDate, 86400));
+var timeline = new Timeline(paper, todayDate);
 
 function timelineDrag_start() {
   console.log("timeline drag start");
@@ -58,7 +56,8 @@ function plotCity(name, offset) {
   var zone = new Zone(name, offset);
   var baseTime = allMarkers.length > 0 ? allMarkers[0].utcTime() : TimeUtil.nowInUtc();
   var timeformat = allMarkers.length > 0 ? allMarkers[0].timeformat  : "ampm";
-  var marker = new ZoneMarker(todayMarker.timeline, zone, baseTime, timeformat);
+  //TODO shitty
+  var marker = new ZoneMarker(timeline.renderedDays[0].timeline, zone, baseTime, timeformat);
   var isColliding = true;
   var step = 60;
   // Dumb overlap resolution: keep moving the marker down until you don't hit shit
@@ -87,7 +86,6 @@ function plotCity(name, offset) {
 
   allMarkers.push(marker);
 
-  //TODO handle when cities are in the same zone
 }
 
 $("#city-search").typeahead({
