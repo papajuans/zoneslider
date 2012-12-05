@@ -10,7 +10,9 @@ var todayDate = new Date(now.getUTCFullYear(),
                                 now.getUTCMonth(), 
                                 now.getUTCDate(),0,0,0);
 
-var timeline = new Timeline(paper, todayDate);
+var yesterday = TimeUtil.addSeconds(todayDate, -86400);
+
+var timeline = new Timeline(paper, yesterday);
 
 function timelineDrag_start() {
   console.log("timeline drag start");
@@ -57,7 +59,7 @@ function plotCity(name, offset) {
   var baseTime = allMarkers.length > 0 ? allMarkers[0].utcTime() : TimeUtil.nowInUtc();
   var timeformat = allMarkers.length > 0 ? allMarkers[0].timeformat  : "ampm";
   //TODO shitty
-  var marker = new ZoneMarker(timeline.renderedDays[0].timeline, zone, baseTime, timeformat);
+  var marker = new ZoneMarker(timeline.renderedDays[1].dayOutline, zone, baseTime, timeformat);
   var isColliding = true;
   var step = 60;
   // Dumb overlap resolution: keep moving the marker down until you don't hit shit

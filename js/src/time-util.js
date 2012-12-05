@@ -11,6 +11,10 @@ var TimeUtil = {
                   return formatted;
   },
 
+  formatDateShort: function(date) {
+    return date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear();
+  },
+
   formatTime: function(date,format) {
                 var minutes = date.getMinutes();
                 var seconds = date.getSeconds();
