@@ -34,7 +34,9 @@ DayBox.prototype._init = function() {
   var timeDifference = this.time.getTime() - this.referencePoint.dateTime.getTime();
   var pixelDifference = this.secondsToPixels(timeDifference / 1000);
   //this.x represents the edge of the dayOutline
+  this.timelineX = pixelDifference;
   this.x = this.referencePoint.x + pixelDifference;
+  //console.log("DayBox._init: time: " + this.time +  ", ∆time: " + timeDifference + ",∆pixels: " + pixelDifference);
 
   var oneDayInPixels = this.secondsToPixels(24 * 60 * 60);
 
@@ -111,6 +113,10 @@ DayBox.prototype.toBack = function() {
   for(var i = this.elements.length - 1; i > -1; i--) {
     this.elements[i].toBack();
   }
-}
+};
+
+DayBox.prototype.toString = function() {
+  return "[DayBox: " + TimeUtil.formatDateShort(this.time) + ", timeline_pos: " + this.x + ", ref: " + this.referencePoint.x + "]";
+};
 
 module.exports = DayBox;
