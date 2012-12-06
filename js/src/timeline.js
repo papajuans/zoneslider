@@ -21,6 +21,10 @@ var Timeline = function(paper, initialDate){
   subscribe("debug", function() {
     console.log("renderedDays: " + self.renderedDays);
   });
+  subscribe("reset", function() {
+    self.referencePoint.x = 0;
+    publish("timeline.shift", 0);
+  });
 }
 
 // Render days starting from initialDate

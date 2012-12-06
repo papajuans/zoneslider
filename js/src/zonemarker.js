@@ -20,9 +20,6 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
   subscribe("drag.start", function(){
     self.startDrag();
   });
-  subscribe("reset", function(){
-    self.reset();
-  });
   subscribe("redraw", function(){
     self.rerender();
   });
@@ -42,7 +39,7 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
     console.log(self.label.getBBox());
     console.log(self.marker.getBBox());
   });
-  /*subscribe("hover.in", function(fromOffset) {
+  subscribe("hover.in", function(fromOffset) {
     if(!self.isDragging) {
       self.calcRelative(fromOffset);
     }
@@ -51,7 +48,7 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
     if(!self.isDragging) {
       self.rerender();
     }
-  });*/
+  });
   this._init();
 };
 
@@ -69,13 +66,7 @@ ZoneMarker.prototype._init= function() {
 };
 
 ZoneMarker.prototype.rerender = function() {
-  // Determine x offset based on currentTime
-  var secondsPassed = (this.time.getHours() * 60 + this.time.getMinutes()) * 60;
-  var newX = this.secondsToPixels(secondsPassed) + this.timeline_startx;
-  this.marker.animate({x: newX }, 800, "bounce");
-  this.label.animate({x: newX },800, "bounce");
   this.label.attr("text", this.getLabelText(this.time));
-  this.labelBox.animate({x: newX - this.labelBox.attr('width')/2},800,"bounce");
 };
 
 //Express the time this marker represents in UTC
@@ -132,11 +123,6 @@ ZoneMarker.prototype.move = function(dx,dy) {
 
 ZoneMarker.prototype.addSeconds = function(seconds) {
   this.time = new Date(this.time.getTime() + seconds * 1000);
-};
-
-ZoneMarker.prototype.reset = function() {
-  this.time = this.zone.now();
-  this.rerender();
 };
 
 ZoneMarker.prototype.pixelsToSeconds = function(pixels) {
