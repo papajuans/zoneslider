@@ -20,8 +20,8 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
   subscribe("drag.start", function(){
     self.startDrag();
   });
-  subscribe("redraw", function(){
-    self.rerender();
+  subscribe("reset", function(){
+    self.showNow();
   });
   subscribe("timeformat.ampm", function(){ 
     self.timeformat = "ampm";
@@ -68,6 +68,11 @@ ZoneMarker.prototype._init= function() {
 ZoneMarker.prototype.rerender = function() {
   this.label.attr("text", this.getLabelText(this.time));
 };
+
+ZoneMarker.prototype.showNow = function() {
+  this.time = TimeUtil.getNowLocalTime(this.zone.offset);
+  this.label.attr("text", this.getLabelText(this.time));
+}
 
 //Express the time this marker represents in UTC
 ZoneMarker.prototype.utcTime = function() {

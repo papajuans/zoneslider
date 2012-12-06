@@ -13,17 +13,19 @@ var Timeline = function(paper, initialDate){
     self.dragging(dx,dy);
   });
   subscribe("drag.end", function() {
-    self.referencePoint.x = self.newTimelineReferenceX;
+    self.referencePoint.x = self.referencePoint.x + self.dx;
   });
   subscribe("drag.start", function() {
-    self.storePosition();
   });
   subscribe("debug", function() {
     console.log("renderedDays: " + self.renderedDays);
   });
   subscribe("reset", function() {
+    publish("drag.start");
+    publish("timeline.move", [0]);
+    publish("drag.end");
+    //hack since I don't set self.dx during this
     self.referencePoint.x = 0;
-    publish("timeline.shift", 0);
   });
 }
 
@@ -44,11 +46,6 @@ Timeline.prototype._init = function(initialDate){
     nextDate = TimeUtil.addSeconds(nextDate, 86400);
   }
 
-  this.storePosition();
-};
-
-Timeline.prototype.storePosition = function() {
-  this.ox = this.referencePoint.x
 };
 
 Timeline.prototype.drawDayBox = function(someDate, referencePoint, dayInPixelsScale) {
@@ -85,8 +82,9 @@ Timeline.prototype.dragging = function(dx,dy) {
     this.drawDayBox(previousDayDate, this.referencePoint, this.dayWidthInPixels);
   }
 
-  this.newTimelineReferenceX = this.ox + dx;
-  publish("timeline.move",[this.newTimelineReferenceX]);
+  this.dx = dx;
+  this.newReferenceX= this.referencePoint.x + dx;
+  publish("timeline.move",[this.newReferenceX]);
 };
 
 module.exports = Timeline

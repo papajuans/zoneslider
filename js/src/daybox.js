@@ -23,8 +23,8 @@ var DayBox = function(utc_time, referencePoint, daysToPixelScale) {
   subscribe("drag.start", function(){
     self.startDrag();
   });
-  subscribe("timeline.move", function(timelineX) {
-    self.move(timelineX);
+  subscribe("timeline.move", function(newReferenceX) {
+    self.move(newReferenceX);
   })
 
 };

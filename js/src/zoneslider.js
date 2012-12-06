@@ -3,7 +3,7 @@ var Zone = require('./zone');
 var TimeUtil = require('./time-util');
 var Timeline = require('./timeline');
 
-paper = Raphael("zoneslider",900,600);
+paper = Raphael("zoneslider",900,350);
 
 var now = new Date();
 var todayDate = new Date(now.getUTCFullYear(), 
