@@ -5,4 +5,9 @@ var TimelinePoint = function(x, dateTime) {
   this.dateTime = dateTime;
 }
 
+TimelinePoint.prototype.toString = function() {
+  return "[TimelinePoint: x:" + this.x + ", " + 
+    TimeUtil.formatDateShort(this.dateTime) + " " + TimeUtil.formatTime(this.dateTime,"mil");
+}
+
 module.exports = TimelinePoint;

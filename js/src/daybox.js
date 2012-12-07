@@ -12,19 +12,16 @@ var DayBox = function(utc_time, referencePoint, daysToPixelScale) {
   this._init();
   this.toBack();
   this.storePosition();
-  /*  
-  subscribe("drag", function(dx,dy){
-    self.move(dx,dy);
-  });
-  */
   subscribe("drag.end", function(){
-    self.endDrag();
+    self.isDragging = false;
+    self.storePosition();
   });
   subscribe("drag.start", function(){
-    self.startDrag();
+    self.isDragging = true;
+    self.storePosition();
   });
-  subscribe("timeline.move", function(newReferenceX) {
-    self.move(newReferenceX);
+  subscribe("timeline.move", function(dx) {
+    self.move(dx);
   })
 
 };
@@ -80,22 +77,12 @@ DayBox.prototype.secondsToPixels = function(seconds) {
   return seconds / this.secondsInAPixel;
 };
 
-DayBox.prototype.startDrag = function() {
-  this.isDragging = true;
+DayBox.prototype.move = function(dx) {
   this.storePosition();
-};
-
-DayBox.prototype.endDrag = function() { 
-  this.isDragging = false;
-  this.storePosition();
-};
-
-DayBox.prototype.move = function(timelineX) {
   var that = this;
-  var delta = timelineX - this.referencePoint.x;
   $.each(this.elements, function(index,element) {
     var ox = that.elements_ox[index];
-    element.attr({x: ox + delta});
+    element.attr({x: ox + dx});
   });
 };
 

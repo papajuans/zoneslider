@@ -52,6 +52,9 @@ $("#mil-format").click(function() {
   publish("timeformat.mil");
 });
 
+$("#moveahead").click(function() { publish("viewport.move", [300]);});
+$("#moveback").click(function() { publish("viewport.move", [-300]);});
+
 var searchResults = [];
 
 function plotCity(name, offset) {

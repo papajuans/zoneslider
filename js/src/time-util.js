@@ -12,7 +12,8 @@ var TimeUtil = {
   },
 
   formatDateShort: function(date) {
-    return date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear();
+    var month = date.getMonth() + 1;
+    return month + "/" + date.getDate() + "/" + date.getFullYear();
   },
 
   formatTime: function(date,format) {

@@ -6,11 +6,12 @@ var Timeline = function(paper, initialDate){
   this.paper = paper;
   this.renderedDays = [];
   this.dayWidthInPixels = 300;
+  this.secondsInAPixel = 1440 * 60 / this.dayWidthInPixels;
   this._init(initialDate);
 
   var self = this;
   subscribe("drag", function(dx,dy) {
-    self.dragging(dx,dy);
+    self.moveViewport(dx,dy);
   });
   subscribe("drag.end", function() {
     self.referencePoint.x = self.referencePoint.x + self.dx;
@@ -19,14 +20,16 @@ var Timeline = function(paper, initialDate){
   });
   subscribe("debug", function() {
     console.log("renderedDays: " + self.renderedDays);
+    console.log("referecePoint: " + self.referencePoint);
+    console.log("viewPoint: " + self.viewPoint);
   });
   subscribe("reset", function() {
-    publish("drag.start");
-    publish("timeline.move", [0]);
-    publish("drag.end");
-    //hack since I don't set self.dx during this
-    self.referencePoint.x = 0;
   });
+  subscribe("viewport.move", function(dPixels) {
+    console.log("Moving viewport by " + dPixels);
+    self.moveViewport(dPixels);
+  });
+
 }
 
 // Render days starting from initialDate
@@ -37,6 +40,8 @@ Timeline.prototype._init = function(initialDate){
   //
   //This says that at x=100 it represents the initialDate
   var referencePoint = new TimelinePoint(0, initialDate);
+  var viewPoint = new TimelinePoint(0, initialDate);
+  this.viewPoint = viewPoint;
   this.referencePoint = referencePoint;
   var nextDate = referencePoint.dateTime;
   var maxDaysToRender = this.paper.width / this.dayWidthInPixels;
@@ -68,7 +73,23 @@ Timeline.prototype.addDay = function() {
   this.drawDayBox(dayAfterDate, this.referencePoint, this.dayWidthInPixels); 
 };
 
-Timeline.prototype.dragging = function(dx,dy) {
+//The the viewport is moving, so reposition the timeline
+//
+// 1. Calculate what the new time is.
+// 2. Calculate what the what the new referencePoint X is.
+// 3. Publish new referencePoint X.
+Timeline.prototype.moveViewport = function(dPixels) {
+  var dSeconds = this.pixelsToSeconds(dPixels);
+  this.viewPoint.dateTime = TimeUtil.addSeconds(this.viewPoint.dateTime, dSeconds);
+  this.viewPoint.x = 0;
+
+  this.dx = (-1*dPixels);
+  this.referencePoint.x = this.referencePoint.x + this.dx;
+  publish("timeline.move",[this.dx]);
+  this._drawMoreDays();
+};
+
+Timeline.prototype._drawMoreDays = function() {
   var lastDay = this.renderedDays[this.renderedDays.length - 1];
   var lastDayEdge = lastDay.dayOutline.attr("x") + this.dayWidthInPixels;
   if(this.paper.width > lastDayEdge) {
@@ -81,10 +102,15 @@ Timeline.prototype.dragging = function(dx,dy) {
     var previousDayDate = TimeUtil.addSeconds(firstDay.time, -86400);
     this.drawDayBox(previousDayDate, this.referencePoint, this.dayWidthInPixels);
   }
-
-  this.dx = dx;
-  this.newReferenceX= this.referencePoint.x + dx;
-  publish("timeline.move",[this.newReferenceX]);
 };
+
+Timeline.prototype.pixelsToSeconds = function(pixels) {
+  return pixels * this.secondsInAPixel;
+};
+
+Timeline.prototype.secondsToPixels = function(seconds) {
+  return seconds / this.secondsInAPixel;
+};
+
 
 module.exports = Timeline
