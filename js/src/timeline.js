@@ -24,6 +24,13 @@ var Timeline = function(paper, initialDate){
     console.log("viewPoint: " + self.viewPoint);
   });
   subscribe("reset", function() {
+    console.log("Resetting to current time.");
+//    var yesterday = TimeUtil.yesterday();
+//   self.viewPoint.dateTime = yesterday;
+//    var delta = self.viewPoint.dateTime.getTime() - self.referencePoint.dateTime.getTime();
+//    var deltaPixels = self.secondsToPixels(delta);
+    var deltaPixels = self.referencePoint.x;
+    self.moveViewport(deltaPixels);
   });
   subscribe("viewport.move", function(dPixels) {
     console.log("Moving viewport by " + dPixels);

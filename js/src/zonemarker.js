@@ -20,9 +20,6 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
   subscribe("drag.start", function(){
     self.startDrag();
   });
-  subscribe("reset", function(){
-    self.showNow();
-  });
   subscribe("timeformat.ampm", function(){ 
     self.timeformat = "ampm";
     self.rerender();

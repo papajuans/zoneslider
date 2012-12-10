@@ -51,14 +51,20 @@ var TimeUtil = {
                                 now.getUTCMinutes(), 
                                 now.getUTCSeconds());
   },
+  
+  today: function() {
+    var now = new Date();
+    return new Date(now.getUTCFullYear(), 
+      now.getUTCMonth(), 
+      now.getUTCDate(),0,0,0);
+  },
+
+  yesterday: function() {
+    return this.addSeconds(this.today(), -86400);
+  },
 
   todayNoonInUtc: function() {
-                    var now = new Date();
-                    var noonInUtc = new Date(now.getUTCFullYear(),
-                                            now.getUTCMonth(),
-                                            now.getUTCDate(),
-                                            12,0,0);
-                    return noonInUtc;
+    return this.addSeconds(this.today(), 43200);
   },
 
   getNowLocalTime: function(offsetInSeconds) {
