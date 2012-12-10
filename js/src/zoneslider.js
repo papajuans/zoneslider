@@ -54,6 +54,10 @@ $("#mil-format").click(function() {
 
 $("#moveahead").click(function() { publish("viewport.move", [300]);});
 $("#moveback").click(function() { publish("viewport.move", [-300]);});
+$("#add12hours").click(function() { publish("viewport.move", [150]);});
+$("#subtract12hours").click(function() { publish("viewport.move", [-150]);});
+$("#add8hours").click(function() { publish("viewport.move", [100]);});
+$("#subtract8hours").click(function() { publish("viewport.move", [-100]);});
 
 var searchResults = [];
 

@@ -49,6 +49,12 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat) {
       self.rerender();
     }
   });
+  subscribe("timeline.move", function(dx){ 
+    // Why the hell am I inverting this everywhere?
+    var seconds = self.pixelsToSeconds(-1 * dx);
+    self.time = TimeUtil.addSeconds(self.time, seconds);
+    self.rerender();
+  });
   this._init();
 };
 
