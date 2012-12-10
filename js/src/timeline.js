@@ -11,12 +11,13 @@ var Timeline = function(paper, initialDate){
 
   var self = this;
   subscribe("drag", function(dx,dy) {
-    self.moveViewport(dx,dy);
+    var newX = self.ox + dx;
+    self.setViewport(newX);
   });
   subscribe("drag.end", function() {
-    self.referencePoint.x = self.referencePoint.x + self.dx;
   });
   subscribe("drag.start", function() {
+    self.ox = self.referencePoint.x;
   });
   subscribe("debug", function() {
     console.log("renderedDays: " + self.renderedDays);
@@ -24,7 +25,6 @@ var Timeline = function(paper, initialDate){
     console.log("viewPoint: " + self.viewPoint);
   });
   subscribe("reset", function() {
-    console.log("Resetting to current time.");
 //    var yesterday = TimeUtil.yesterday();
 //   self.viewPoint.dateTime = yesterday;
 //    var delta = self.viewPoint.dateTime.getTime() - self.referencePoint.dateTime.getTime();
@@ -93,6 +93,16 @@ Timeline.prototype.moveViewport = function(dPixels) {
   this.dx = (-1*dPixels);
   this.referencePoint.x = this.referencePoint.x + this.dx;
   publish("timeline.move",[this.dx]);
+  this._drawMoreDays();
+};
+
+
+Timeline.prototype.setViewport = function(xCoordinate) {
+  var dx = xCoordinate - this.referencePoint.x;
+  this.referencePoint.x = xCoordinate;
+  var dSeconds = this.pixelsToSeconds(dx);
+  this.viewPoint.dateTime = TimeUtil.addSeconds(this.viewPoint.dateTime, dSeconds);
+  publish("timeline.move", [dx]);
   this._drawMoreDays();
 };
 

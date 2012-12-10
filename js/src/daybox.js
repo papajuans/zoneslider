@@ -82,7 +82,7 @@ DayBox.prototype.move = function(dx) {
   var that = this;
   $.each(this.elements, function(index,element) {
     var ox = that.elements_ox[index];
-    element.attr({x: ox + dx});
+    element.attr({x: ox + dx});//,100,"easeInOut");
   });
 };
 
