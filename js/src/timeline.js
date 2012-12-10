@@ -25,10 +25,6 @@ var Timeline = function(paper, initialDate){
     console.log("viewPoint: " + self.viewPoint);
   });
   subscribe("reset", function() {
-//    var yesterday = TimeUtil.yesterday();
-//   self.viewPoint.dateTime = yesterday;
-//    var delta = self.viewPoint.dateTime.getTime() - self.referencePoint.dateTime.getTime();
-//    var deltaPixels = self.secondsToPixels(delta);
     var deltaPixels = self.referencePoint.x;
     self.moveViewport(deltaPixels);
   });
@@ -62,7 +58,7 @@ Timeline.prototype._init = function(initialDate){
 
 Timeline.prototype.drawDayBox = function(someDate, referencePoint, dayInPixelsScale) {
   console.log("Drawing " + someDate);
-  var dayBox = new DayBox(someDate,referencePoint,dayInPixelsScale);
+  var dayBox = new DayBox(someDate,referencePoint,dayInPixelsScale,this.paper);
   this.renderedDays.push(dayBox);
   this.renderedDays.sort(function(a,b) {
     if(a.time.getTime() < b.time.getTime()) {

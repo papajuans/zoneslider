@@ -1,7 +1,8 @@
 var TimeUtil = require('./time-util');
 
-var DayBox = function(utc_time, referencePoint, daysToPixelScale) {
+var DayBox = function(utc_time, referencePoint, daysToPixelScale,paper) {
   var self = this;
+  this.paper = paper;
   this.elements = [];
   this.elements_ox = [];
 
@@ -38,7 +39,7 @@ DayBox.prototype._init = function() {
   var oneDayInPixels = this.secondsToPixels(24 * 60 * 60);
 
   //Render 1 day
-  var dayOutline = paper.rect(this.x,40,oneDayInPixels,60).attr({"stroke": "#aaa", "fill": "#fff"});
+  var dayOutline = this.paper.rect(this.x,40,oneDayInPixels,60).attr({"stroke": "#aaa", "fill": "#fff"});
   this._rememberElement(dayOutline);
   this.dayOutlineWidth = dayOutline.attr("width");
   this.dayOutlineHeight = dayOutline.attr("height");
@@ -46,7 +47,7 @@ DayBox.prototype._init = function() {
   this.dayOutline = dayOutline;
 
   var x = this.x + this.dayOutlineWidth/2;
-  var label = paper.text(x, 55, TimeUtil.formatDate(this.time)).attr({font: "18px Georgia,serif",fill:"#222"});
+  var label = this.paper.text(x, 55, TimeUtil.formatDate(this.time)).attr({font: "18px Georgia,serif",fill:"#222"});
   this._rememberElement(label);
 
   //Draw hour ticks
@@ -59,8 +60,8 @@ DayBox.prototype._init = function() {
 DayBox.prototype._drawTickMark = function(x_offset, label) {
   var y = this.y + 35;
   var drawHeight = this.dayOutlineHeight - 45;
-  var line = paper.rect(this.x + x_offset,y+10,1,drawHeight).attr({stroke:"#888"});
-  var label = paper.text(this.x + x_offset,y,label).attr({font: "12px Georgia,serif"});
+  var line = this.paper.rect(this.x + x_offset,y+10,1,drawHeight).attr({stroke:"#888"});
+  var label = this.paper.text(this.x + x_offset,y,label).attr({font: "12px Georgia,serif"});
   this._rememberElement(line);
   this._rememberElement(label);
 };

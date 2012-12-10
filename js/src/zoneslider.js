@@ -3,81 +3,35 @@ var Zone = require('./zone');
 var TimeUtil = require('./time-util');
 var Timeline = require('./timeline');
 
-paper = Raphael("zoneslider",900,350);
+var ZoneSlider = function(paper) {
+  this.paper = paper;
+  this.timeline = new Timeline(paper, TimeUtil.yesterday());
+  this.allMarkers = [];
 
-var now = new Date();
-var todayDate = new Date(now.getUTCFullYear(), 
-                                now.getUTCMonth(), 
-                                now.getUTCDate(),0,0,0);
-
-var yesterday = TimeUtil.addSeconds(todayDate, -86400);
-
-var timeline = new Timeline(paper, yesterday);
-
-function timelineDrag_start() {
-  console.log("timeline drag start");
-  publish("drag.start");
-}
-
-function timelineDrag_end() {
-  console.log("timeline drag end");
-  publish("drag.end");
-}
-
-function timelineDragging(dx,dy) {
-  // Invert dx before we publish so that the movement is more natural:
-  // if I drag right (positive dx), I should be going back in time.
-  publish("drag", [dx,dy]);
+  // Initialize the invisible dragger
+  this.timelineDragger = paper.rect(0,40, 900, 60);
+  this.timelineDragger.attr({"fill": "#fff", "opacity":0});
+  this.timelineDragger.drag(this.timelineDragging, this.timelineDrag_start, this.timelineDrag_end);
 };
 
-timelineDragger = paper.rect(0,40, 900, 60);
-timelineDragger.attr({"fill": "#fff", "opacity":0});
-timelineDragger.drag(timelineDragging, timelineDrag_start, timelineDrag_end);
-
-var allMarkers = [];
-
-plotCity("NYC", -18000);
-plotCity("London", 0);
-plotCity("Taipei", 28800);
-
-$("#reset").click(function() { 
-  publish("reset");
-});
-
-$("#am-pm-format").click(function() {
-  publish("timeformat.ampm");
-});
-
-$("#mil-format").click(function() {
-  publish("timeformat.mil");
-});
-
-$("#moveahead").click(function() { publish("viewport.move", [300]);});
-$("#moveback").click(function() { publish("viewport.move", [-300]);});
-$("#add12hours").click(function() { publish("viewport.move", [150]);});
-$("#subtract12hours").click(function() { publish("viewport.move", [-150]);});
-$("#add8hours").click(function() { publish("viewport.move", [100]);});
-$("#subtract8hours").click(function() { publish("viewport.move", [-100]);});
-
-var searchResults = [];
-
-function plotCity(name, offset) {
+ZoneSlider.prototype.plotCity = function(name, offset) {
+  console.log("Plotting " + name + " at " + offset);
   var zone = new Zone(name, offset);
-  var baseTime = allMarkers.length > 0 ? allMarkers[0].utcTime() : TimeUtil.nowInUtc();
-  var timeformat = allMarkers.length > 0 ? allMarkers[0].timeformat  : "ampm";
+  var baseTime = this.allMarkers.length > 0 ? this.allMarkers[0].utcTime() : TimeUtil.nowInUtc();
+  var timeformat = this.allMarkers.length > 0 ? this.allMarkers[0].timeformat  : "ampm";
   //TODO shitty
-  var marker = new ZoneMarker(timeline.renderedDays[1].dayOutline, zone, baseTime, timeformat);
+  var marker = new ZoneMarker(this.timeline.renderedDays[1].dayOutline, zone, baseTime, timeformat,this.paper);
   var isColliding = true;
   var step = 60;
   // Dumb overlap resolution: keep moving the marker down until you don't hit shit
   while(isColliding) {
     var newMarkerBBox = marker.labelBox.getBBox();
 
-    if(allMarkers.length == 0) {
+    if(this.allMarkers.length == 0) {
       break;
     }
 
-    $.each(allMarkers, function(index, existingMarker) {
+    $.each(this.allMarkers, function(index, existingMarker) {
       var existingBBox = existingMarker.labelBox.getBBox();
       if(Raphael.isBBoxIntersect(newMarkerBBox, existingBBox)){
         isColliding = true;
@@ -93,33 +47,21 @@ function plotCity(name, offset) {
 
   console.log(marker.zone.name + " y is " + marker.labelBox.attr("y"));
 
-  allMarkers.push(marker);
+  this.allMarkers.push(marker);
+};
 
-}
 
-$("#city-search").typeahead({
-  source: function(query, process) {
-    return $.get('search', {q: query}, function(data) {
-      searchResults = data.results;
-      var names = [];
-      for(var i = 0; i < data.results.length; i++) {
-        names.push(data.results[i].name + ", " + data.results[i].country);
-      }
-      return process(names);
-    });
-  },
-  minLength: 3,
-  updater: function(item) {
-    var splitAt = item.indexOf(",");
-    var name = item.substring(0, splitAt);
-    var country = item.substring(splitAt+2);
-    for(var i = 0; i < searchResults.length; i++) {
-      var candidate = searchResults[i];
-      if(name == candidate.name && country == candidate.country) {
-        console.log("plotting " + candidate.name);
-        plotCity(candidate.name, candidate.offset);
-      }
-    }
-  }
-});
+ZoneSlider.prototype.timelineDrag_start = function() {
+  publish("drag.start");
+};
 
+ZoneSlider.prototype.timelineDrag_end = function() {
+  console.log("timeline drag end");
+  publish("drag.end");
+};
+
+ZoneSlider.prototype.timelineDragging = function(dx,dy) {
+  publish("drag", [dx,dy]);
+};
+
+module.exports = ZoneSlider;
