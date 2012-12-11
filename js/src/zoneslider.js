@@ -11,7 +11,8 @@ var ZoneSlider = function(paper) {
   // Initialize the invisible dragger
   this.timelineDragger = paper.rect(0,40, 900, 60);
   this.timelineDragger.attr({"fill": "#fff", "opacity":0});
-  this.timelineDragger.drag(this.timelineDragging, this.timelineDrag_start, this.timelineDrag_end);
+  this.timelineDragger.drag(this.timelineDragging, this.timelineDrag_start, this.timelineDrag_end,this);
+  this.timelineDragger.hover(this.timelineDrag_hover_start, this.timelineDrag_hover_end,this);
 };
 
 ZoneSlider.prototype.plotCity = function(name, offset) {
@@ -57,8 +58,18 @@ ZoneSlider.prototype.timelineDrag_start = function() {
 
 ZoneSlider.prototype.timelineDrag_end = function() {
   console.log("timeline drag end");
+  this.timelineDragger.attr({"cursor":"default"});
   publish("drag.end");
 };
+
+ZoneSlider.prototype.timelineDrag_hover_start = function(){ 
+  this.timelineDragger.attr({"cursor":"pointer"});
+};
+
+ZoneSlider.prototype.timelineDrag_hover_end= function(){ 
+  this.timelineDragger.attr({"cursor":"default"});
+};
+
 
 ZoneSlider.prototype.timelineDragging = function(dx,dy) {
   publish("drag", [dx,dy]);

@@ -24,7 +24,7 @@ function loadFromCookie() {
     //Default
     zoneslider.plotCity("New York City", -18000);
     zoneslider.plotCity("London", 0);
-    zoneslider.plotCity("Taipei", 28000);
+    zoneslider.plotCity("Taipei", 28800);
   }
 };
 
