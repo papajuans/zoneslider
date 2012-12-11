@@ -46,8 +46,6 @@ ZoneSlider.prototype.plotCity = function(name, offset) {
 
   }
 
-  console.log(marker.zone.name + " y is " + marker.labelBox.attr("y"));
-
   this.allMarkers.push(marker);
 };
 
