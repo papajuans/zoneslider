@@ -20,8 +20,8 @@ ZoneSlider.prototype.plotCity = function(name, offset) {
   var zone = new Zone(name, offset);
   var baseTime = this.allMarkers.length > 0 ? this.allMarkers[0].utcTime() : TimeUtil.nowInUtc();
   var timeformat = this.allMarkers.length > 0 ? this.allMarkers[0].timeformat  : "ampm";
-  //TODO shitty
-  var marker = new ZoneMarker(this.timeline.renderedDays[1].dayOutline, zone, baseTime, timeformat,this.paper);
+  // TODO super shitty
+  var marker = new ZoneMarker(this.timeline.renderedDays[0], zone, baseTime, timeformat,this.paper);
   var isColliding = true;
   var step = 60;
   // Dumb overlap resolution: keep moving the marker down until you don't hit shit

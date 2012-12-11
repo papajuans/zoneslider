@@ -1,14 +1,16 @@
 var TimeUtil = require('./time-util');
 
-var ZoneMarker = function(timeline, zone, utc_time, timeformat, paper) {
+var ZoneMarker = function(daybox, zone, utc_time, timeformat, paper) {
   var self = this;
   this.paper = paper;
-  this.timeline_y = timeline.attr("y");
-  this.timeline_startx = timeline.attr("x");
-  this.timeline_width = timeline.attr("width");
-  this.timeline_height = timeline.attr("height");
-  this.timeline_endx = this.timeline_startx + this.timeline_width;
-  this.secondsInAPixel = 1440 * 60 / this.timeline_width;
+  this.daybox = daybox;
+  var dayOutline = daybox.dayOutline;
+  this.daybox_y = dayOutline.attr("y");
+  this.daybox_startx = dayOutline.attr("x");
+  this.daybox_width = dayOutline.attr("width");
+  this.daybox_height = dayOutline.attr("height");
+  this.daybox_endx = this.daybox_startx + this.daybox_width;
+  this.secondsInAPixel = 1440 * 60 / this.daybox_width;
   this.zone = zone;
   this.time = TimeUtil.addSeconds(utc_time, this.zone.offset);
   this.timeformat = timeformat;
@@ -40,7 +42,7 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat, paper) {
   });
   subscribe("timeline.move", function(dx){ 
     // Why the hell am I inverting this everywhere?
-    //console.log(self + ": timeline moved by " + dx);
+    //console.log(self + ": daybox moved by " + dx);
     var seconds = self.pixelsToSeconds(-1 * dx);
     self.time = TimeUtil.addSeconds(self.time, seconds);
     self.rerender();
@@ -50,12 +52,11 @@ var ZoneMarker = function(timeline, zone, utc_time, timeformat, paper) {
 
 ZoneMarker.prototype._init= function() {
   // Determine x offset based on currentTime
-  var secondsFromNoonUtc = (this.time.getTime() - TimeUtil.todayNoonInUtc().getTime()) / 1000;
+  var secondsFromRef = (this.time.getTime() - this.daybox.referencePoint.dateTime.getTime()) / 1000;
   //var secondsPassedToday = this.time.getHours() * 3600 + this.time.getMinutes() * 60 + this.time.getSeconds();
-  var centerPoint = this.timeline_startx + this.timeline_width / 2;
-  var x = centerPoint + this.secondsToPixels(secondsFromNoonUtc);
+  var x = this.daybox.referencePoint.x + this.secondsToPixels(secondsFromRef);
   console.log(this.zone.name + " is at x: " + x);
-  this.marker = this.paper.rect(x, this.timeline_y, 1, this.timeline_height+16).attr({stroke:"#FF0000", fill: "#FF0000",opacity:0.22});
+  this.marker = this.paper.rect(x, this.daybox_y, 1, this.daybox_height+16).attr({stroke:"#FF0000", fill: "#FF0000",opacity:0.22});
   this.label = this.paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = this.paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
