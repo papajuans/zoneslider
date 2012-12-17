@@ -39,12 +39,14 @@ DayBox.prototype._init = function() {
   var oneDayInPixels = this.secondsToPixels(24 * 60 * 60);
 
   //Render 1 day
-  var dayOutline = this.paper.rect(this.x,40,oneDayInPixels,60).attr({"stroke": "#aaa", "fill": "#fff"});
+  var dayOutline = this.paper.rect(this.x,40,oneDayInPixels,60).attr({"stroke": "#777", "opacity": 1});
   this._rememberElement(dayOutline);
   this.dayOutlineWidth = dayOutline.attr("width");
   this.dayOutlineHeight = dayOutline.attr("height");
   this.y = 40;
   this.dayOutline = dayOutline;
+
+  //this.dayOutline.attr("fill","0-#aaa-#fff:30-#fff:70-#aaa");
 
   var x = this.x + this.dayOutlineWidth/2;
   var label = this.paper.text(x, 55, TimeUtil.formatDate(this.time)).attr({font: "18px Georgia,serif",fill:"#222"});

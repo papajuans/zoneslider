@@ -55,21 +55,35 @@ ZoneMarker.prototype._init= function() {
   var secondsFromRef = (this.time.getTime() - this.daybox.referencePoint.dateTime.getTime()) / 1000;
   //var secondsPassedToday = this.time.getHours() * 3600 + this.time.getMinutes() * 60 + this.time.getSeconds();
   var x = this.daybox.referencePoint.x + this.secondsToPixels(secondsFromRef);
-  console.log(this.zone.name + " is at x: " + x);
   this.marker = this.paper.rect(x, this.daybox_y, 1, this.daybox_height+16).attr({stroke:"#FF0000", fill: "#FF0000",opacity:0.22});
-  this.label = this.paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
+  this.label = this.paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",stroke:"none", fill: "#000"});
   var labelBox =  this.label.getBBox();
-  this.labelBox = this.paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
+  this.labelBox = this.paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:0.2});
+  this.dayNightIndicator = this.paper.image("img/day-night-indicator.png", this.labelBox.attr('x'), labelBox.y, this.labelBox.attr('width'), this.labelBox.attr('width'));
+  this.dayNightIndicator.attr({opacity:.8});
+  this.dayNightIndicator.toBack();
+  this.mask = this.paper.rect(this.labelBox.attr('x'), this.labelBox.attr('y') + this.labelBox.attr('height'),this.labelBox.attr('width'), this.labelBox.attr('height')+40).attr({stroke:"none", fill:"#fff"});
+  this.watchMask = this.paper.image("img/mask.png", this.labelBox.attr('x'), this.labelBox.attr('y')+this.labelBox.attr('height')-20, this.labelBox.attr('width'), 20);
+  this.label.toFront();
+  this.rotateDayNight();
   this.wireDragging();
+};
+
+ZoneMarker.prototype.rotateDayNight = function() {
+  var minutesPassed = this.time.getHours() * 60 + this.time.getMinutes();
+  var angleToRotate = -1 * ( minutesPassed * 0.25);
+  this.dayNightIndicator.transform("r" + angleToRotate);
 };
 
 ZoneMarker.prototype.rerender = function() {
   this.label.attr("text", this.getLabelText(this.time));
+  this.rotateDayNight();
 };
 
 ZoneMarker.prototype.showNow = function() {
   this.time = TimeUtil.getNowLocalTime(this.zone.offset);
   this.label.attr("text", this.getLabelText(this.time));
+  this.rotateDayNight();
 }
 
 //Express the time this marker represents in UTC
@@ -122,6 +136,8 @@ ZoneMarker.prototype.move = function(dx,dy) {
   this.deltaSeconds = this.pixelsToSeconds(dx);
   var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
   this.label.attr({text: this.getLabelText(someTime)});
+  this.time = someTime;
+  this.rotateDayNight();
 };
 
 ZoneMarker.prototype.addSeconds = function(seconds) {
@@ -160,6 +176,8 @@ ZoneMarker.prototype.moveDown = function(pixels) {
   this.marker.attr({height: this.marker.attr('height') + pixels});//, 500, "backOut");
   this.label.attr({y: this.label.attr('y') + pixels});//, 500, "backOut");
   this.labelBox.attr({y: this.labelBox.attr('y') + pixels});//, 500,"backOut");
+  this.dayNightIndicator.attr({y: this.dayNightIndicator.attr('y') + pixels});
+  this.mask.attr({y: this.mask.attr('y') + pixels});
 };
 
 module.exports = ZoneMarker;
