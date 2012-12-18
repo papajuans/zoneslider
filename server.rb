@@ -49,7 +49,8 @@ get '/search' do
       tz = TZInfo::Timezone.get(row[4])
       offset_in_minutes = tz.current_period.utc_offset
       in_dst = tz.current_period.dst?
-      code = row[2].has_number? ? row[1] : "#{row[2]}, #{row[1]}"
+      country = TZInfo::Country.get(row[1])
+      code = row[2].has_number? ? country.name : "#{row[2]}, #{country.name}"
       name = "#{row[0]}"
       c = { name: name, offset: offset_in_minutes, dstOffset: offset_in_minutes, inDst: in_dst, country: code }
       city_results.push c
