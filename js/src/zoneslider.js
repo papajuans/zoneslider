@@ -9,7 +9,7 @@ var ZoneSlider = function(paper) {
   this.allMarkers = [];
 
   // Initialize the invisible dragger
-  this.timelineDragger = paper.rect(0,40, 900, 60);
+  this.timelineDragger = paper.rect(0,40, this.paper.width, 60);
   this.timelineDragger.attr({"fill": "#fff", "opacity":0});
   this.timelineDragger.drag(this.timelineDragging, this.timelineDrag_start, this.timelineDrag_end,this);
   this.timelineDragger.hover(this.timelineDrag_hover_start, this.timelineDrag_hover_end,this);

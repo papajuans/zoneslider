@@ -7,7 +7,9 @@ var paper = null;
 var zoneslider = null;
 
 function drawZoneslider() {
-  paper = Raphael("zoneslider",900,350);
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+  paper = Raphael("zoneslider",width-10,400);
   console.log("Drawing zoneslider");
   zoneslider = new ZoneSlider(paper);
 };
@@ -83,9 +85,14 @@ function setupTools() {
   });
 };
 
+function startTick() {
+  setInterval(function() { publish('tick'); }, 1000);
+};
+
 
 $(function() {
   setupTools();
   drawZoneslider();
   loadFromCookie();
+  startTick();
 });

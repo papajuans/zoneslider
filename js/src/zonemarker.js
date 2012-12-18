@@ -22,14 +22,6 @@ var ZoneMarker = function(daybox, zone, utc_time, timeformat, paper) {
     self.timeformat = "mil";
     self.rerender();
   });
-  subscribe("tick", function() {
-    self.addSeconds(1);
-    self.rerender();
-  });
-  subscribe("dump", function() {
-    console.log(self.label.getBBox());
-    console.log(self.marker.getBBox());
-  });
   subscribe("hover.in", function(fromOffset) {
     if(!self.isDragging) {
       self.calcRelative(fromOffset);
@@ -39,6 +31,10 @@ var ZoneMarker = function(daybox, zone, utc_time, timeformat, paper) {
     if(!self.isDragging) {
       self.rerender();
     }
+  });
+  subscribe("tick", function() {
+    self.addSeconds(1);
+    self.rerender();
   });
   subscribe("timeline.move", function(dx){ 
     // Why the hell am I inverting this everywhere?
@@ -59,7 +55,7 @@ ZoneMarker.prototype._init= function() {
   this.marker = this.paper.rect(x, this.daybox_y, 1, this.daybox_height+16).attr({stroke:"#FF0000", fill: "#FF0000",opacity:0.22});
   this.label = this.paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
-  this.labelBox = this.paper.rect(labelBox.x-5, labelBox.y-5, labelBox.width+10, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
+  this.labelBox = this.paper.rect(labelBox.x-8, labelBox.y-5, labelBox.width+16, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
   this.wireDragging();
 };
 

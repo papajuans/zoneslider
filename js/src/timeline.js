@@ -23,14 +23,22 @@ var Timeline = function(paper, initialDate){
     console.log("renderedDays: " + self.renderedDays);
     console.log("referecePoint: " + self.referencePoint);
     console.log("viewPoint: " + self.viewPoint);
+    console.log("seconds in a pixel: " + self.secondsInAPixel);
   });
   subscribe("reset", function() {
     var deltaPixels = self.referencePoint.x;
     self.moveViewport(deltaPixels);
   });
   subscribe("viewport.move", function(dPixels) {
-    console.log("Moving viewport by " + dPixels);
     self.moveViewport(dPixels);
+  });
+  var secondsCounter = 0;
+  subscribe("tick", function() {
+    secondsCounter++;
+    if(secondsCounter > self.secondsInAPixel) {
+      self.moveViewport(1);
+      secondsCounter = 0;
+    }
   });
 
 }
@@ -70,10 +78,10 @@ Timeline.prototype.drawDayBox = function(someDate, referencePoint, dayInPixelsSc
 };
 
 //Draw one more day after
-Timeline.prototype.addDay = function() {
-  var lastDay = this.renderedDays[this.renderedDays.length - 1];
-  var dayAfterDate = TimeUtil.addSeconds(lastDay.time, 86400);
-  this.drawDayBox(dayAfterDate, this.referencePoint, this.dayWidthInPixels); 
+Timeline.prototype._appendDay = function() {
+  var currentLastDay = this.renderedDays[this.renderedDays.length - 1];
+  var dayAfter = TimeUtil.addSeconds(currentLastDay.time, 86400);
+  this.drawDayBox(dayAfter, this.referencePoint, this.dayWidthInPixels); 
 };
 
 //The the viewport is moving, so reposition the timeline
@@ -92,7 +100,6 @@ Timeline.prototype.moveViewport = function(dPixels) {
   this._drawMoreDays();
 };
 
-
 Timeline.prototype.setViewport = function(xCoordinate) {
   var dx = xCoordinate - this.referencePoint.x;
   this.referencePoint.x = xCoordinate;
@@ -106,7 +113,7 @@ Timeline.prototype._drawMoreDays = function() {
   var lastDay = this.renderedDays[this.renderedDays.length - 1];
   var lastDayEdge = lastDay.dayOutline.attr("x") + this.dayWidthInPixels;
   if(this.paper.width > lastDayEdge) {
-    this.addDay(86400);
+    this._appendDay();
   }
 
   var firstDay = this.renderedDays[0];
@@ -124,6 +131,5 @@ Timeline.prototype.pixelsToSeconds = function(pixels) {
 Timeline.prototype.secondsToPixels = function(seconds) {
   return seconds / this.secondsInAPixel;
 };
-
 
 module.exports = Timeline
