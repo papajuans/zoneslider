@@ -62,7 +62,7 @@ function setupTools() {
         searchResults = data.results;
         var names = [];
         for(var i = 0; i < data.results.length; i++) {
-          names.push(data.results[i].name + ", " + data.results[i].country);
+          names.push(data.results[i].city + ", " + data.results[i].country);
         }
         return process(names);
       });
@@ -74,10 +74,10 @@ function setupTools() {
       var country = item.substring(splitAt+2);
       for(var i = 0; i < searchResults.length; i++) {
         var candidate = searchResults[i];
-        if(name == candidate.name && country == candidate.country) {
-          console.log("plotting " + candidate.name);
-          zoneslider.plotCity(candidate.name, candidate.offset);
-          rememberCity(candidate.name, candidate.offset);
+        if(name == candidate.city && country == candidate.country) {
+          console.log("plotting " + candidate.city);
+          zoneslider.plotCity(candidate.city, candidate.offset);
+          rememberCity(candidate.city, candidate.offset);
           break;
         }
       }
