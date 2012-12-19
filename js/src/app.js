@@ -1,6 +1,7 @@
 var TimeUtil = require('./time-util');
 var CookieUtil = require('./cookie-util');
 var ZoneSlider = require('./zoneslider');
+var CityTime = require('./citytime');
 
 var searchResults = [];
 var paper = null;
@@ -24,9 +25,13 @@ function loadFromCookie() {
     }
   } else {
     //Default
-    zoneslider.plotCity("New York City", -18000);
-    zoneslider.plotCity("London", 0);
-    zoneslider.plotCity("Taipei", 28800);
+    var springForward = new Date(Date.parse("Sun, 10 Mar 2013 07:00:00 +0000"));
+    var springForwardLondon = new Date(Date.parse("Sun, 10 Mar 2013 02:00:00 +0000"));
+    var nyc = new CityTime("New York City", -18000, -14400, springForward, false);
+    var london = new CityTime("London", 0, 0, springForwardLondon, false);
+
+    zoneslider.plotCity(nyc);
+    //zoneslider.plotCity(london);
   }
 };
 

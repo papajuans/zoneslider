@@ -1,6 +1,6 @@
 var TimeUtil = require('./time-util');
 
-var ZoneMarker = function(daybox, zone, utc_time, timeformat, paper) {
+var ZoneMarker = function(daybox, city, timeformat, paper) {
   var self = this;
   this.paper = paper;
   this.daybox = daybox;
@@ -11,9 +11,10 @@ var ZoneMarker = function(daybox, zone, utc_time, timeformat, paper) {
   this.daybox_height = dayOutline.attr("height");
   this.daybox_endx = this.daybox_startx + this.daybox_width;
   this.secondsInAPixel = 1440 * 60 / this.daybox_width;
-  this.zone = zone;
-  this.time = TimeUtil.addSeconds(utc_time, this.zone.offset);
+  this.city = city;
+  this.time = this.city.localTime();
   this.timeformat = timeformat;
+  this._init();
   subscribe("timeformat.ampm", function(){ 
     self.timeformat = "ampm";
     self.rerender();
@@ -36,49 +37,40 @@ var ZoneMarker = function(daybox, zone, utc_time, timeformat, paper) {
     self.addSeconds(1);
     self.rerender();
   });
-  subscribe("timeline.move", function(dx){ 
+ subscribe("timeline.move", function(dx){ 
     // Why the hell am I inverting this everywhere?
     //console.log(self + ": daybox moved by " + dx);
     var seconds = self.pixelsToSeconds(-1 * dx);
-    self.time = TimeUtil.addSeconds(self.time, seconds);
+    self.city.addSeconds(seconds);
     self.rerender();
   });
-  this._init();
+  subscribe("marker-debug", function() {
+    console.log(self.zone.name + " is at " + self.time);
+  });
 };
 
 ZoneMarker.prototype._init= function() {
   // Determine x offset based on currentTime
-  var secondsFromRef = (this.time.getTime() - this.daybox.referencePoint.dateTime.getTime()) / 1000;
-  //var secondsPassedToday = this.time.getHours() * 3600 + this.time.getMinutes() * 60 + this.time.getSeconds();
+  var secondsFromRef = (this.city.localTime().getTime() - this.daybox.referencePoint.dateTime.getTime()) / 1000;
   var x = this.daybox.referencePoint.x + this.secondsToPixels(secondsFromRef);
-  console.log(this.zone.name + " is at x: " + x);
+  console.log(this.city.name + " is at x: " + x);
   this.marker = this.paper.rect(x, this.daybox_y, 1, this.daybox_height+16).attr({stroke:"#FF0000", fill: "#FF0000",opacity:0.22});
-  this.label = this.paper.text(x, 140, this.getLabelText(this.time) ).attr({font: "16px sans-serif",fill:"#222"});
+  this.label = this.paper.text(x, 140, this.getLabelText()).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = this.paper.rect(labelBox.x-8, labelBox.y-5, labelBox.width+16, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
   this.wireDragging();
 };
 
 ZoneMarker.prototype.rerender = function() {
-  this.label.attr("text", this.getLabelText(this.time));
-};
-
-ZoneMarker.prototype.showNow = function() {
-  this.time = TimeUtil.getNowLocalTime(this.zone.offset);
-  this.label.attr("text", this.getLabelText(this.time));
-}
-
-//Express the time this marker represents in UTC
-ZoneMarker.prototype.utcTime = function() {
-  return TimeUtil.addSeconds(this.time, -1 * this.zone.offset);
+  this.label.attr("text", this.getLabelText());
 };
 
 ZoneMarker.prototype.getXOffset = function() {
   return "X: " + this.marker.attr("x");
 };
 
-ZoneMarker.prototype.getLabelText = function(time) {
-  return this.zone.name + "\n" + TimeUtil.formatTime(time,this.timeformat);
+ZoneMarker.prototype.getLabelText = function() {
+  return this.city.name + "\n" + TimeUtil.formatTime(this.city.localTime(),this.timeformat);
 };
 
 ZoneMarker.prototype.storePosition = function() {
@@ -91,7 +83,7 @@ ZoneMarker.prototype.wireDragging = function() {
 };
 
 ZoneMarker.prototype.hoverIn = function() {
-  publish("hover.in",[this.zone.offset]);
+  publish("hover.in",[this.city.offset]);
 };
 
 ZoneMarker.prototype.hoverOut = function() {
@@ -116,12 +108,12 @@ ZoneMarker.prototype.move = function(dx,dy) {
   // Invert dx; if we drag to the left(negative dx), time goes up and vice versa
   var dx = -1 * dx;
   this.deltaSeconds = this.pixelsToSeconds(dx);
-  var someTime = new Date(this.time.getTime() + this.deltaSeconds * 1000);
-  this.label.attr({text: this.getLabelText(someTime)});
+  this.addSeconds(this.deltaSeconds);
+  this.label.attr({text: this.getLabelText()});
 };
 
 ZoneMarker.prototype.addSeconds = function(seconds) {
-  this.time = new Date(this.time.getTime() + seconds * 1000);
+  this.city.addSeconds(seconds);
 };
 
 ZoneMarker.prototype.pixelsToSeconds = function(pixels) {
@@ -145,10 +137,10 @@ ZoneMarker.prototype.endDrag = function() {
 };
 
 ZoneMarker.prototype.calcRelative = function(fromOffset) {
-  if(fromOffset != this.zone.offset) {
-    var relative = Math.abs(fromOffset - this.zone.offset) / 3600;
-    relative = this.zone.offset < fromOffset ? "-" + relative : "+" + relative;
-    this.label.attr({text: this.zone.name + "\n" + relative + " hours"});
+  if(fromOffset != this.city.offset) {
+    var relative = Math.abs(fromOffset - this.city.offset) / 3600;
+    relative = this.city.offset < fromOffset ? "-" + relative : "+" + relative;
+    this.label.attr({text: this.city.name + "\n" + relative + " hours"});
   }
 };
 

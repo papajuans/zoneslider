@@ -72,7 +72,7 @@ get '/search' do
 
       # The date in which a new offset should be calculated (either
       # entering or exiting daylight savings time
-      next_transition = current_tz_period.local_end.to_s
+      next_transition = current_tz_period.utc_end.to_s
 
       # This is the offset to use when in daylight savings mode
       dst_offset = calculate_dst_offset tz
