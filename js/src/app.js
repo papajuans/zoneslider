@@ -24,7 +24,7 @@ function loadFromCookie() {
       zoneslider.plotCity(cityAndOffset[0], parseInt(cityAndOffset[1]));
     }
   } else {
-    //Default
+    // for testing
     var springForward = new Date(1356004800000);
     var springForwardLondon = new Date(Date.parse("Thu, 20 Dec 2012 02:00:00 +0000"));
     var nyc = new CityTime("New York City", -18000, -14400, springForward, false);
@@ -83,8 +83,10 @@ function setupTools() {
         var candidate = searchResults[i];
         if(name == candidate.city && country == candidate.country) {
           console.log("plotting " + candidate.city);
-          zoneslider.plotCity(candidate.city, candidate.offset);
-          rememberCity(candidate.city, candidate.offset);
+          var nextTransitionDate = new Date(candidate.nextTimeChange);
+          var newCity = new CityTime(candidate.city, candidate.offset, candidate.dstOffset, nextTransitionDate, candidate.inDst);
+          zoneslider.plotCity(newCity);
+          rememberCity(newCity.name, newCity.offset);
           break;
         }
       }

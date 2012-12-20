@@ -32,6 +32,13 @@ def calculate_dst_offset(some_tz)
   return some_tz.current_period.utc_total_offset
 end
 
+def get_next_transition(some_tz)
+  next_transition = some_tz.current_period.utc_end
+  unless next_transition.nil?
+    return next_transition.strftime("%s").to_i
+  end
+  return nil
+end
 cities = SQLite3::Database.new("data/cities.db")
 search_statement = cities.prepare("select * from cities where name LIKE ? order by population desc")
 
@@ -71,8 +78,9 @@ get '/search' do
       utc_offset = current_tz_period.utc_offset
 
       # The date in which a new offset should be calculated (either
-      # entering or exiting daylight savings time
-      next_transition = current_tz_period.utc_end.to_s
+      # entering or exiting daylight savings time)
+      # This is expressed as unixtime in UTC time (GMT+0)
+      next_transition = get_next_transition tz
 
       # This is the offset to use when in daylight savings mode
       dst_offset = calculate_dst_offset tz

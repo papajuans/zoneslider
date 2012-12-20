@@ -111,7 +111,7 @@ ZoneMarker.prototype.storePosition = function() {
 };
 
 ZoneMarker.prototype.hoverIn = function() {
-  publish("hover.in",[this.city.offset]);
+  publish("hover.in",[this.city.currentOffset()]);
 };
 
 ZoneMarker.prototype.hoverOut = function() {
@@ -164,8 +164,9 @@ ZoneMarker.prototype.endDrag = function() {
 };
 
 ZoneMarker.prototype.calcRelative = function(fromOffset) {
-  if(fromOffset != this.city.offset) {
-    var relative = Math.abs(fromOffset - this.city.offset) / 3600;
+  var currentOffset = this.city.currentOffset();
+  if(fromOffset != currentOffset) {
+    var relative = Math.abs(fromOffset - currentOffset) / 3600;
     relative = this.city.offset < fromOffset ? "-" + relative : "+" + relative;
     this.label.attr({text: this.city.name + "\n" + relative + " hours"});
   }

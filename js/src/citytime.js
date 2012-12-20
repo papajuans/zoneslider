@@ -21,11 +21,11 @@ CityTime.prototype.setTime = function(timeInUtc) {
 };
 
 CityTime.prototype.localTime = function() {
-  var offset = this._determineOffset();
+  var offset = this.currentOffset();
   return TimeUtil.addSeconds(this.utcTime,offset);
 };
 
-CityTime.prototype._determineOffset = function() {
+CityTime.prototype.currentOffset = function() {
   if(this.isDst()) {
     publish(this.name+".daylight-savings");
     return this.dstOffset;
