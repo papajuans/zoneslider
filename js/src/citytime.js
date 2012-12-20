@@ -27,8 +27,10 @@ CityTime.prototype.localTime = function() {
 
 CityTime.prototype._determineOffset = function() {
   if(this.isDst()) {
+    publish(this.name+".daylight-savings");
     return this.dstOffset;
   } else {
+    publish(this.name+".standard");
     return this.offset;
   }
 };

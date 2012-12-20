@@ -14,7 +14,13 @@ var ZoneMarker = function(daybox, city, timeformat, paper) {
   this.city = city;
   this.time = this.city.localTime();
   this.timeformat = timeformat;
+
+  this.elements = [];
+
   this._init();
+
+  this.inDst = this.city.isDst();
+
   subscribe("timeformat.ampm", function(){ 
     self.timeformat = "ampm";
     self.rerender();
@@ -33,11 +39,32 @@ var ZoneMarker = function(daybox, city, timeformat, paper) {
       self.rerender();
     }
   });
+  subscribe(this.city.name+".daylight-savings", function() {
+    if(!self.inDst) {
+      var seconds = self.city.dstOffset - self.city.offset;
+      var pixelsToMove = self.secondsToPixels(seconds);
+      console.log(self.city.name + " entering DST, shifting " + seconds + " secs (" + pixelsToMove + "px)");
+      self.nudge(pixelsToMove);
+    }
+    self.inDst = true;
+  });
+  subscribe(this.city.name+".standard", function() {
+    if(self.inDst) {
+      var seconds = self.city.offset - self.city.dstOffset;
+      var pixelsToMove = self.secondsToPixels(seconds);
+      console.log(self.city.name + " entering DST, shifting " + seconds + " secs (" + pixelsToMove + "px)");
+      self.nudge(pixelsToMove);
+    }
+    self.inDst = false;
+  });
   subscribe("tick", function() {
     self.addSeconds(1);
     self.rerender();
   });
- subscribe("timeline.move", function(dx){ 
+  subscribe(self.city.name+".dstSwitch", function() {
+    
+  });
+  subscribe("timeline.move", function(dx){ 
     // Why the hell am I inverting this everywhere?
     //console.log(self + ": daybox moved by " + dx);
     var seconds = self.pixelsToSeconds(-1 * dx);
@@ -58,7 +85,12 @@ ZoneMarker.prototype._init= function() {
   this.label = this.paper.text(x, 140, this.getLabelText()).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = this.paper.rect(labelBox.x-8, labelBox.y-5, labelBox.width+16, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
-  this.wireDragging();
+
+  this._rememberElement(this.marker);
+  this._rememberElement(this.label);
+  this._rememberElement(this.labelBox);
+
+  this.labelBox.hover(this.hoverIn, this.hoverOut, this);
 };
 
 ZoneMarker.prototype.rerender = function() {
@@ -76,10 +108,6 @@ ZoneMarker.prototype.getLabelText = function() {
 ZoneMarker.prototype.storePosition = function() {
   this.marker_ox = this.marker.attr("x");
   this.label_ox = this.label.attr("x");
-};
-
-ZoneMarker.prototype.wireDragging = function() {
-  this.labelBox.hover(this.hoverIn, this.hoverOut, this);
 };
 
 ZoneMarker.prototype.hoverIn = function() {
@@ -130,7 +158,6 @@ ZoneMarker.prototype.ending = function() {
 
 ZoneMarker.prototype.endDrag = function() {
   this.label.attr({opacity: 1});
-  this.time = new Date(this.time.getTime() + this.deltaSeconds*1000);
   this.deltaSeconds = 0;
   this.storePosition();
   this.isDragging = false;
@@ -148,6 +175,19 @@ ZoneMarker.prototype.moveDown = function(pixels) {
   this.marker.attr({height: this.marker.attr('height') + pixels});//, 500, "backOut");
   this.label.attr({y: this.label.attr('y') + pixels});//, 500, "backOut");
   this.labelBox.attr({y: this.labelBox.attr('y') + pixels});//, 500,"backOut");
+};
+
+// Nudge the marker left or right by some pixels
+ZoneMarker.prototype.nudge = function(pixels) {
+  var that = this;
+  $.each(this.elements, function(index,element) {
+    var ox = element.attr("x");
+    element.attr({x: ox + pixels});
+  });
+};
+
+ZoneMarker.prototype._rememberElement = function(element) {
+  this.elements.push(element);
 };
 
 module.exports = ZoneMarker;

@@ -25,13 +25,12 @@ function loadFromCookie() {
     }
   } else {
     //Default
-    var springForward = new Date(Date.parse("Sun, 10 Mar 2013 07:00:00 +0000"));
-    var springForwardLondon = new Date(Date.parse("Sun, 10 Mar 2013 02:00:00 +0000"));
+    var springForward = new Date(1356004800000);
+    var springForwardLondon = new Date(Date.parse("Thu, 20 Dec 2012 02:00:00 +0000"));
     var nyc = new CityTime("New York City", -18000, -14400, springForward, false);
-    var london = new CityTime("London", 0, 0, springForwardLondon, false);
 
     zoneslider.plotCity(nyc);
-    //zoneslider.plotCity(london);
+//    zoneslider.plotCity(london);
   }
 };
 
@@ -60,6 +59,9 @@ function setupTools() {
   $("#subtract12hours").click(function() { publish("viewport.move", [-150]);});
   $("#add8hours").click(function() { publish("viewport.move", [100]);});
   $("#subtract8hours").click(function() { publish("viewport.move", [-100]);});
+
+  $("#add1hours").click(function() { publish("viewport.move", [12.5]);});
+  $("#subtract1hours").click(function() { publish("viewport.move", [-12.5]);});
 
   $("#city-search").typeahead({
     source: function(query, process) {
@@ -99,5 +101,5 @@ $(function() {
   setupTools();
   drawZoneslider();
   loadFromCookie();
-  startTick();
+  //startTick();
 });
