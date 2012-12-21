@@ -12,6 +12,16 @@ var CityTime = function(name, utcOffset, dstOffset, nextTransition, initialDst, 
   if(utcTime) { this.utcTime = utcTime; }
 };
 
+// Convert everything to actual Date objects
+// This is needed since JSON.parse doesn't convert
+// strings to Dates.
+//
+// This needs to be after a parse
+CityTime.prototype.rectifyDates = function() {
+  if(typeof this.nextTransition == "string")
+    this.nextTransition = new Date(this.nextTransition);
+};
+
 CityTime.prototype.addSeconds = function(seconds) {
   this.utcTime = TimeUtil.addSeconds(this.utcTime,seconds);
 };
@@ -44,6 +54,11 @@ CityTime.prototype.isDst = function() {
 };
 
 CityTime.prototype._isAfterTransitionDate = function() {
+
+  if(this.nextTransition == null) {
+    return false;
+  }
+
   return this.utcTime.getTime() > this.nextTransition.getTime();
 };
 

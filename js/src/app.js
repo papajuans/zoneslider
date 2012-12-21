@@ -16,13 +16,14 @@ function drawZoneslider() {
 };
 
 function loadFromCookie() {
-  var citiesFromCookies = CookieUtil.readCookie("cities");
-  if(citiesFromCookies != "") {
-    var cities = citiesFromCookies.split(",");
-    for(var i = 0; i < cities.length; i++) {
-      var cityAndOffset = cities[i].split(":");
-      zoneslider.plotCity(cityAndOffset[0], parseInt(cityAndOffset[1]));
-    }
+  var citiesFromCookie = CookieUtil.readCookie("cities");
+  if(citiesFromCookie) {
+    var parsed = JSON.parse(citiesFromCookie);
+    $.each(parsed, function(index, city) {
+      city.__proto__ = new CityTime();
+      city.rectifyDates();
+      zoneslider.plotCity(city);
+    });
   } else {
     // for testing
     var springForward = new Date(1356004800000);
@@ -30,14 +31,13 @@ function loadFromCookie() {
     var nyc = new CityTime("New York City", -18000, -14400, springForward, false);
 
     zoneslider.plotCity(nyc);
-//    zoneslider.plotCity(london);
   }
 };
 
-function rememberCity(cityName, offset) {
-  //TODO prevent duplicates?
-  var cookieValue = cityName + ":" + offset;
-  CookieUtil.appendToCookie("cities",cookieValue);
+function rememberCities() {
+  CookieUtil.eraseCookie("cities");
+  var value = JSON.stringify(zoneslider.allCities);
+  CookieUtil.createCookie("cities", value);
 };
 
 function setupTools() {
@@ -86,7 +86,7 @@ function setupTools() {
           var nextTransitionDate = new Date(candidate.nextTimeChange);
           var newCity = new CityTime(candidate.city, candidate.offset, candidate.dstOffset, nextTransitionDate, candidate.inDst);
           zoneslider.plotCity(newCity);
-          rememberCity(newCity.name, newCity.offset);
+          rememberCities();
           break;
         }
       }

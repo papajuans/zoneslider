@@ -7,6 +7,7 @@ var ZoneSlider = function(paper) {
   this.paper = paper;
   this.timeline = new Timeline(paper, TimeUtil.yesterday());
   this.allMarkers = [];
+  this.allCities = [];
 
   // Initialize the invisible dragger
   this.timelineDragger = paper.rect(0,40, this.paper.width, 60);
@@ -48,6 +49,7 @@ ZoneSlider.prototype.plotCity = function(cityTime) {
   }
 
   this.allMarkers.push(marker);
+  this.allCities.push(marker.city);
 };
 
 

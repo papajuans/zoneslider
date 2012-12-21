@@ -18,23 +18,13 @@ var CookieUtil = {
       while (c.charAt(0)==' ') c = c.substring(1,c.length);
       if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
-    return "";
+    return null;
   },
 
   eraseCookie: function(name) {
     this.createCookie(name,"",-1);
   },
 
-  appendToCookie: function(name, value) {
-    var cookieValue = this.readCookie(name);
-    if(cookieValue == "") { 
-      cookieValue = value;
-    } else {
-      cookieValue = cookieValue + "," + value;
-    }
-    this.eraseCookie(name);
-    this.createCookie(name, cookieValue);
-  }
 };
 
 module.exports = CookieUtil;
