@@ -102,7 +102,9 @@ ZoneMarker.prototype.getXOffset = function() {
 };
 
 ZoneMarker.prototype.getLabelText = function() {
-  return this.city.name + "\n" + TimeUtil.formatTime(this.city.localTime(),this.timeformat);
+  var hours = this.city.localTime().getHours();
+  var dayNightIndicator = (hours > 6 && hours < 18) ? " ☼" : " ☾";
+  return this.city.name + dayNightIndicator + "\n" + TimeUtil.formatTime(this.city.localTime(),this.timeformat);
 };
 
 ZoneMarker.prototype.storePosition = function() {
