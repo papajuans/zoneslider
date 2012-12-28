@@ -10,7 +10,7 @@ As added bonus, dragging any plotted city moves them all at once, allowing
 you to quickly "compute" what-if scenarios: "If it's 9am in NYC, what time
 is it in London?" and vice versa.
 
-A demo can be seen here: http://www.roflopoly.com/zoneslider
+A demo can be seen here: http://www.roflopoly.com/zoneslider/
 
 # Technical bits
 

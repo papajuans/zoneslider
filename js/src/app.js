@@ -25,10 +25,10 @@ function loadFromCookie() {
       zoneslider.plotCity(city);
     });
   } else {
-    // for testing
     var springForward = new Date(1356004800000);
     var springForwardLondon = new Date(Date.parse("Thu, 20 Dec 2012 02:00:00 +0000"));
     var nyc = new CityTime("New York City", -18000, -14400, springForward, false);
+    var london = new CityTime("London", 0, 3600, springForwardLondon, false);
 
     zoneslider.plotCity(nyc);
   }
