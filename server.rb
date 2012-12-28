@@ -81,6 +81,7 @@ get '/search' do
       # entering or exiting daylight savings time)
       # This is expressed as unixtime in UTC time (GMT+0)
       next_transition = get_next_transition tz
+      puts "next_transition: #{next_transition}"
 
       # This is the offset to use when in daylight savings mode
       dst_offset = calculate_dst_offset tz
