@@ -14,6 +14,22 @@ var ZoneSlider = function(paper) {
   this.timelineDragger.attr({"fill": "#fff", "opacity":0});
   this.timelineDragger.drag(this.timelineDragging, this.timelineDrag_start, this.timelineDrag_end,this);
   this.timelineDragger.hover(this.timelineDrag_hover_start, this.timelineDrag_hover_end,this);
+
+  var that = this;
+  subscribe("remove-city", function(cityName) {
+    // Find the index of the city
+    var cityIndex = 0;
+    $.each(that.allCities, function(index, cityTime){
+      if(cityTime.name == cityName) {
+        cityIndex = index;
+        return false;
+      }
+    });
+    console.log("cityIndex is " + cityIndex);
+    that.allCities.splice(cityIndex,1);
+    publish("save");
+  });
+
 };
 
 ZoneSlider.prototype.plotCity = function(cityTime) {
@@ -25,7 +41,7 @@ ZoneSlider.prototype.plotCity = function(cityTime) {
   // TODO super shitty
   var marker = new ZoneMarker(this.timeline.renderedDays[0], cityTime, timeformat, this.paper);
   var isColliding = true;
-  var step = 60;
+  var step = 80;
   // Dumb overlap resolution: keep moving the marker down until you don't hit shit
   while(isColliding) {
     var newMarkerBBox = marker.labelBox.getBBox();

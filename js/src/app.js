@@ -10,7 +10,7 @@ var zoneslider = null;
 function drawZoneslider() {
   var width = window.innerWidth;
   var height = window.innerHeight;
-  paper = Raphael("zoneslider",width-10,400);
+  paper = Raphael("zoneslider",width-10,500);
   console.log("Drawing zoneslider");
   zoneslider = new ZoneSlider(paper);
 };
@@ -105,3 +105,9 @@ $(function() {
   loadFromCookie();
   startTick();
 });
+
+subscribe("save", function() {
+  rememberCities();
+});
+
+

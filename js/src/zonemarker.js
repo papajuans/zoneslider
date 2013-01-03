@@ -83,10 +83,23 @@ ZoneMarker.prototype._init= function() {
   this.label = this.paper.text(x, 140, this.getLabelText()).attr({font: "16px sans-serif",fill:"#222"});
   var labelBox =  this.label.getBBox();
   this.labelBox = this.paper.rect(labelBox.x-8, labelBox.y-5, labelBox.width+16, labelBox.height+10).attr({stroke:"#222", fill:"#fff", opacity:"0.2"});
+  var bottomLeftX = this.labelBox.attr("x");
+  var bottomLeftY = this.labelBox.attr("y") + this.labelBox.attr("height");
+  var width = this.labelBox.attr("width");
+
+  this.removeBoxLabel = this.paper.text(x, bottomLeftY + 8, "(remove)").attr({font:"12px sans-serif", fill:"#aaa"});
+  this.removeBoxLabel.click(this.remove,this);
+  var removeBoxLabel = this.removeBoxLabel;
+  this.removeBoxLabel.hover(function() {
+                              removeBoxLabel.attr({cursor:"pointer",fill:"#222"});
+                            }, function() {
+                              removeBoxLabel.attr({cursor:"default",fill:"#aaa"});
+                            });
 
   this._rememberElement(this.marker);
   this._rememberElement(this.label);
   this._rememberElement(this.labelBox);
+  this._rememberElement(this.removeBoxLabel);
 
   this.labelBox.hover(this.hoverIn, this.hoverOut, this);
 };
@@ -163,6 +176,13 @@ ZoneMarker.prototype.endDrag = function() {
   this.isDragging = false;
 };
 
+ZoneMarker.prototype.remove = function() {
+  $.each(this.elements, function(index,element) {
+    element.remove();
+  });
+  publish("remove-city",[this.city.name]);
+};
+
 ZoneMarker.prototype.calcRelative = function(fromOffset) {
   var currentOffset = this.city.currentOffset();
   if(fromOffset != currentOffset) {
@@ -173,6 +193,7 @@ ZoneMarker.prototype.calcRelative = function(fromOffset) {
 };
 
 ZoneMarker.prototype.moveDown = function(pixels) {
+  this.removeBoxLabel.attr({y: this.removeBoxLabel.attr('y') + pixels});
   this.marker.attr({height: this.marker.attr('height') + pixels});//, 500, "backOut");
   this.label.attr({y: this.label.attr('y') + pixels});//, 500, "backOut");
   this.labelBox.attr({y: this.labelBox.attr('y') + pixels});//, 500,"backOut");
