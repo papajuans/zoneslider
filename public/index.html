@@ -5,6 +5,15 @@
     <title>ZoneSlider</title>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <script type="text/javascript">
+    // webfaction oddities that I have yet to figure out
+    var currentLocation = window.location.pathname;
+    var lastChar = currentLocation.charAt(currentLocation.length - 1);
+    if(lastChar != '/' && currentLocation == "/zoneslider")
+    {
+        window.location = window.location.pathname + "/";
+    }
+    </script>
   </head>
   <body>
     <p><strong>Drag</strong> the timeline to quickly see what time it is in all different cities.</p>
