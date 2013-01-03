@@ -103,5 +103,5 @@ $(function() {
   setupTools();
   drawZoneslider();
   loadFromCookie();
-  //startTick();
+  startTick();
 });

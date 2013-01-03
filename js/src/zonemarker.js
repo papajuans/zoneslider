@@ -30,14 +30,12 @@ var ZoneMarker = function(daybox, city, timeformat, paper) {
     self.rerender();
   });
   subscribe("hover.in", function(fromOffset) {
-    if(!self.isDragging) {
-      self.calcRelative(fromOffset);
-    }
+    self.hovering = true;
+    self.calcRelative(fromOffset);
   });
   subscribe("hover.out", function() {
-    if(!self.isDragging) {
-      self.rerender();
-    }
+    self.rerender();
+    self.hovering = false;
   });
   subscribe(this.city.name+".daylight-savings", function() {
     if(!self.inDst) {
@@ -59,7 +57,7 @@ var ZoneMarker = function(daybox, city, timeformat, paper) {
   });
   subscribe("tick", function() {
     self.addSeconds(1);
-    self.rerender();
+    if(!self.hovering) self.rerender();
   });
   subscribe(self.city.name+".dstSwitch", function() {
     
