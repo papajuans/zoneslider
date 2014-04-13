@@ -58,6 +58,11 @@ get '/utc' do
   json :utc_time => now.to_s
 end
 
+get '/bundle' do 
+  system 'npm run build'
+  send_file './dist/bundle.js'
+end
+
 # Sample JSON response for ?q=New
 # { results: [
 #   { name: "New York City, offset: -5, inDst: false }
