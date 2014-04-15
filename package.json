@@ -4,13 +4,17 @@
   "description": "Use Raphaël.js for interesting timezone visualization.",
   "version": "0.0.0",
   "homepage": "https://github.com/papajuans/zoneslider",
+  "scripts": {
+    "build": "browserify ./js/src/app.js > dist/bundle.js"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/papajuans/zoneslider.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "browserify": "~3.41.0"
+  },
   "devDependencies": {
-    "grunt-browserify": "0.1.0"
   },
   "optionalDependencies": {},
   "engines": {
