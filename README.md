@@ -12,7 +12,7 @@ Dragging the the timeline allows you to quickly compute "what-if" scenarios:
 Hovering over a city will give you relative calculations to other cities; how
 many hours the other cities are in relation to the city you're hovering.
 
-A demo can be seen here: http://www.roflopoly.com/zoneslider/
+A demo can be seen here: http://www.hoursapart.com
 
 # Technical bits
 
