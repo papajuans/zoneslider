@@ -1,54 +1,59 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>ZoneSlider</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <script type="text/javascript">
+
+<head>
+  <meta charset="utf-8">
+  <title>ZoneSlider</title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  <script type="text/javascript">
     // webfaction oddities that I have yet to figure out
     var currentLocation = window.location.pathname;
     var lastChar = currentLocation.charAt(currentLocation.length - 1);
-    if(lastChar != '/' && currentLocation == "/zoneslider")
-    {
-        window.location = window.location.pathname + "/";
+    if (lastChar != '/' && currentLocation == "/zoneslider") {
+      window.location = window.location.pathname + "/";
     }
-    </script>
-  </head>
-  <body>
-    <p><strong>Drag</strong> the timeline to quickly see what time it is in all different cities.</p>
-    <p><strong>Hover</strong> over a city to find out how many hours away other cities are.</p>
-    <p>See <a href="http://github.com/papajuans/zoneslider">github</a>.</p>
-      Format: <a id="am-pm-format" href="#">AM-PM</a> / <a id="mil-format" href="#">24 hour</a><br/>
-      <a id="reset" href="#">Reset to now</a><br/>
-      <input id="city-search" type="text" placeholder="Search for a city…" /><br/>
-    <div id="controls">
-      <a id="moveahead" href="#">+1 day</a>, <a id="moveback" href="#">-1 day</a> | 
-      <a id="add12hours" href="#">+12 hours</a>, <a id="subtract12hours" href="#">-12 hours</a> | 
-      <a id="add8hours" href="#">+8 hours</a>, <a id="subtract8hours" href="#">-8 hours</a> |
-      <a id="add1hours" href="#">+1 hours</a>, <a id="subtract1hours" href="#">-1 hours</a> 
+  </script>
+</head>
 
-    </div>
-    <div id="zoneslider"></div>
-    <script type="text/javascript" src="js/vendor/jquery.js"></script>
-    <script type="text/javascript" src="js/vendor/raphael-min.js"></script>
-    <script type="text/javascript" src="js/vendor/xxspubsub.js"></script>
-    <script type="text/javascript" src="js/vendor/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/vendor/json2.js"></script>
-    <script type="text/javascript" src="/bundle"></script>
-    <script type="text/javascript">
+<body>
+  <p><strong>Drag</strong> the timeline to quickly see what time it is in all different cities.</p>
+  <p><strong>Hover</strong> over a city to find out how many hours away other cities are.</p>
+  <p>See <a href="http://github.com/papajuans/zoneslider">github</a>.</p>
+  Format: <a id="am-pm-format" href="#">AM-PM</a> / <a id="mil-format" href="#">24 hour</a><br />
+  <a id="reset" href="#">Reset to now</a><br />
+  <input id="city-search" type="text" placeholder="Search for a city…" /><br />
+  <div id="controls">
+    <a id="moveahead" href="#">+1 day</a>, <a id="moveback" href="#">-1 day</a> |
+    <a id="add12hours" href="#">+12 hours</a>, <a id="subtract12hours" href="#">-12 hours</a> |
+    <a id="add8hours" href="#">+8 hours</a>, <a id="subtract8hours" href="#">-8 hours</a> |
+    <a id="add1hours" href="#">+1 hours</a>, <a id="subtract1hours" href="#">-1 hours</a>
+  </div>
+  <div id="text">
+    <p><strong>As text...</strong></p>
+    <p id="as-text"></p>
+  </div>
+  <div id="zoneslider"></div>
+  <script type="text/javascript" src="js/vendor/jquery.js"></script>
+  <script type="text/javascript" src="js/vendor/raphael-min.js"></script>
+  <script type="text/javascript" src="js/vendor/xxspubsub.js"></script>
+  <script type="text/javascript" src="js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/vendor/json2.js"></script>
+  <script type="text/javascript" src="/bundle"></script>
+  <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-7511384-1']);
-  _gaq.push(['_setDomainName', 'roflopoly.com']);
-  _gaq.push(['_trackPageview']);
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-7511384-1']);
+    _gaq.push(['_setDomainName', 'roflopoly.com']);
+    _gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    (function () {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
 
-</script>
-  </body>
+  </script>
+</body>
+
 </html>

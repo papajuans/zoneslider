@@ -10,16 +10,17 @@ var zoneslider = null;
 function drawZoneslider() {
   var width = window.innerWidth;
   var height = window.innerHeight;
-  paper = Raphael("zoneslider",width-10,500);
+  paper = Raphael("zoneslider", width - 10, 500);
   console.log("Drawing zoneslider");
   zoneslider = new ZoneSlider(paper);
+  return zoneslider;
 };
 
 function loadFromCookie() {
   var citiesFromCookie = CookieUtil.readCookie("cities");
-  if(citiesFromCookie) {
+  if (citiesFromCookie) {
     var parsed = JSON.parse(citiesFromCookie);
-    $.each(parsed, function(index, city) {
+    $.each(parsed, function (index, city) {
       city.__proto__ = new CityTime();
       city.rectifyDates();
       zoneslider.plotCity(city);
@@ -41,47 +42,47 @@ function rememberCities() {
 };
 
 function setupTools() {
-  $("#reset").click(function() { 
+  $("#reset").click(function () {
     publish("reset");
   });
 
-  $("#am-pm-format").click(function() {
+  $("#am-pm-format").click(function () {
     publish("timeformat.ampm");
   });
 
-  $("#mil-format").click(function() {
+  $("#mil-format").click(function () {
     publish("timeformat.mil");
   });
 
-  $("#moveahead").click(function() { publish("viewport.move", [300]);});
-  $("#moveback").click(function() { publish("viewport.move", [-300]);});
-  $("#add12hours").click(function() { publish("viewport.move", [150]);});
-  $("#subtract12hours").click(function() { publish("viewport.move", [-150]);});
-  $("#add8hours").click(function() { publish("viewport.move", [100]);});
-  $("#subtract8hours").click(function() { publish("viewport.move", [-100]);});
+  $("#moveahead").click(function () { publish("viewport.move", [300]); });
+  $("#moveback").click(function () { publish("viewport.move", [-300]); });
+  $("#add12hours").click(function () { publish("viewport.move", [150]); });
+  $("#subtract12hours").click(function () { publish("viewport.move", [-150]); });
+  $("#add8hours").click(function () { publish("viewport.move", [100]); });
+  $("#subtract8hours").click(function () { publish("viewport.move", [-100]); });
 
-  $("#add1hours").click(function() { publish("viewport.move", [12.5]);});
-  $("#subtract1hours").click(function() { publish("viewport.move", [-12.5]);});
+  $("#add1hours").click(function () { publish("viewport.move", [12.5]); });
+  $("#subtract1hours").click(function () { publish("viewport.move", [-12.5]); });
 
   $("#city-search").typeahead({
-    source: function(query, process) {
-      return $.get('search', {q: query}, function(data) {
+    source: function (query, process) {
+      return $.get('search', { q: query }, function (data) {
         searchResults = data.results;
         var names = [];
-        for(var i = 0; i < data.results.length; i++) {
+        for (var i = 0; i < data.results.length; i++) {
           names.push(data.results[i].city + ", " + data.results[i].country);
         }
         return process(names);
       });
     },
     minLength: 3,
-    updater: function(item) {
+    updater: function (item) {
       var splitAt = item.indexOf(",");
       var name = item.substring(0, splitAt);
-      var country = item.substring(splitAt+2);
-      for(var i = 0; i < searchResults.length; i++) {
+      var country = item.substring(splitAt + 2);
+      for (var i = 0; i < searchResults.length; i++) {
         var candidate = searchResults[i];
-        if(name == candidate.city && country == candidate.country) {
+        if (name == candidate.city && country == candidate.country) {
           console.log("plotting " + candidate.city);
           var nextTransitionDate = new Date(candidate.nextTimeChange);
           var newCity = new CityTime(candidate.city, candidate.offset, candidate.dstOffset, nextTransitionDate, candidate.inDst);
@@ -95,18 +96,19 @@ function setupTools() {
 };
 
 function startTick() {
-  setInterval(function() { publish('tick'); }, 1000);
+  setInterval(function () { publish('tick'); }, 1000);
 };
 
 
-$(function() {
+$(function () {
   setupTools();
-  drawZoneslider();
+  this.zoneslider = drawZoneslider();
   loadFromCookie();
   startTick();
+  this.zoneslider.printTimeText();
 });
 
-subscribe("save", function() {
+subscribe("save", function () {
   rememberCities();
 });
 
