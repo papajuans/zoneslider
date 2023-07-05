@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    concurrent-ruby (1.2.2)
     mini_portile2 (2.8.2)
     multi_json (1.15.0)
     mustermann (3.0.0)
@@ -27,8 +26,7 @@ GEM
     sqlite3 (1.6.3)
       mini_portile2 (~> 2.8.0)
     tilt (2.2.0)
-    tzinfo (2.0.6)
-      concurrent-ruby (~> 1.0)
+    tzinfo (0.3.35)
 
 PLATFORMS
   ruby
@@ -38,7 +36,7 @@ DEPENDENCIES
   sinatra
   sinatra-contrib
   sqlite3
-  tzinfo
+  tzinfo (= 0.3.35)
 
 BUNDLED WITH
    2.2.15

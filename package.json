@@ -14,8 +14,7 @@
   "dependencies": {
     "browserify": "~3.41.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "optionalDependencies": {},
   "engines": {
     "node": "*"
