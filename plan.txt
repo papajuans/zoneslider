@@ -1,0 +1,6 @@
+TODO
+2023-07-05
+1. Remove Ruby backend in favor of Node
+2. Change TZINfo version (currently 0.3, latest is 2.x)
+3. Fix state problems (global time?)
+4. Fix cookie values/offset data

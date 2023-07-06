@@ -30,8 +30,8 @@ var ZoneSlider = function (paper) {
     publish("save");
   });
 
-  subscribe("drag.end", this.printTimeText.bind(this));
-  subscribe("remove-city", this.printTimeText.bind(this));
+  subscribe("drag.end", this.printSummaryText.bind(this));
+  subscribe("remove-city", this.printSummaryText.bind(this));
   return this;
 };
 
@@ -71,7 +71,7 @@ ZoneSlider.prototype.plotCity = function (cityTime) {
   this.allCities.push(marker.city);
 };
 
-ZoneSlider.prototype.printTimeText = function () {
+ZoneSlider.prototype.printSummaryText = function () {
   let timeAsText = this.allMarkers.map(m => {
     console.log(m);
     return `${m.getLabelText()}`;

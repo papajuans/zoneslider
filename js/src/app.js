@@ -105,7 +105,7 @@ $(function () {
   this.zoneslider = drawZoneslider();
   loadFromCookie();
   startTick();
-  this.zoneslider.printTimeText();
+  this.zoneslider.printSummaryText();
 });
 
 subscribe("save", function () {
