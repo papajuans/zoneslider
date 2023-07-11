@@ -4,3 +4,5 @@ TODO
 2. Change TZINfo version (currently 0.3, latest is 2.x)
 3. Fix state problems (global time?)
 4. Fix cookie values/offset data
+5. Snap to 15min increments
+6. Use real sunrise/sunset data

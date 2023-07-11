@@ -5,9 +5,13 @@ var CityTime = require('./citytime');
 
 var ZoneSlider = function (paper) {
   this.paper = paper;
+
+  // We set the reference day to be yesterday because we only ever draw 3 boxes
   this.timeline = new Timeline(paper, TimeUtil.yesterday());
   this.allMarkers = [];
   this.allCities = [];
+  // The base reference in which all markers are based on
+  this.sliderReferenceTimeInUTC = TimeUtil.nowInUtc();
 
   // Initialize the invisible dragger
   this.timelineDragger = paper.rect(0, 40, this.paper.width, 60);
@@ -38,8 +42,8 @@ var ZoneSlider = function (paper) {
 ZoneSlider.prototype.plotCity = function (cityTime) {
   console.log("Plotting " + cityTime.name + " at " + cityTime.offset);
   // We want to plot the city in relation to the other cities that have already been plotted.
-  var baseTime = this.allMarkers.length > 0 ? this.allMarkers[0].city.utcTime : TimeUtil.nowInUtc();
-  cityTime.setTime(baseTime);
+  //  var baseTime = this.allMarkers.length > 0 ? this.allMarkers[0].city.utcTime : TimeUtil.nowInUtc();
+  cityTime.setTime(this.sliderReferenceTimeInUTC);
   var timeformat = this.allMarkers.length > 0 ? this.allMarkers[0].timeformat : "ampm";
   // TODO super shitty
   var marker = new ZoneMarker(this.timeline.renderedDays[0], cityTime, timeformat, this.paper);
