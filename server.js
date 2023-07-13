@@ -1,20 +1,43 @@
 'use strict';
 
 const Hapi = require('@hapi/hapi');
+const Inert = require('@hapi/inert');
+const Path = require('path');
 const { DateTime } = require("luxon");
 
 const init = async () => {
 
+
+
   const server = Hapi.server({
     port: 9393,
-    host: 'localhost'
+    host: 'localhost',
+    routes: {
+      files: {
+        relativeTo: Path.join(__dirname, 'public')
+      }
+    }
   });
+
+  await server.register(Inert);
 
   server.route({
     method: 'GET',
     path: '/',
-    handler: (request, h) => {
-      return 'Hello World!';
+    handler: {
+      file: 'index.html'
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/{param*}',
+    handler: {
+      directory: {
+        path: '.',
+        redirectToSlash: true,
+        index: true,
+      }
     }
   });
 
@@ -29,8 +52,8 @@ const init = async () => {
   server.route({
     method: 'GET',
     path: '/bundle',
-    handler: (request, h) => {
-
+    handler: {
+      file: 'dist/bundle.js'
     }
   });
 
