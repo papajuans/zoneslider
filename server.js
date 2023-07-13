@@ -77,19 +77,18 @@ const init = async () => {
      */
 
     const currentZoneName = row.timezone;
+    console.log(new Date(), '>> server.js:80 - ', row.name, currentZoneName, ianaDb.hasDst(currentZoneName), ianaDb.nextDstChange(currentZoneName, Date.now()));
     const currentTimeInZone = DateTime.now().setZone(currentZoneName);
-    let a = {
+    return {
       city: row.name,
       inDST: currentTimeInZone.isInDST,
       offset: ianaDb.standardOffset(currentZoneName, Date.now()).as(Tzc.TimeUnit.Second),
       dstOffset: ianaDb.totalOffset(currentZoneName, Date.now()).as(Tzc.TimeUnit.Second),
       offsetNameShort: currentTimeInZone.offsetNameShort,
       country: row.country,
-      nextTimeChange: DateTime.fromMillis(ianaDb.nextDstChange(currentZoneName, Date.now())).toUTC()
+      nextTimeChange: ianaDb.nextDstChange(currentZoneName, Date.now()) ?
+        DateTime.fromMillis(ianaDb.nextDstChange(currentZoneName, Date.now())).toUTC() : ""
     };
-
-    console.log(a);
-    return a;
   }
 
   server.route({
@@ -99,15 +98,12 @@ const init = async () => {
 
       return new Promise((resolve, reject) => {
         let city = request.query['q'];
-        console.log(city);
-        searchQuery.all(city, function (err, rows) {
+        searchQuery.all(`${city}%`, function (err, rows) {
+          console.log(new Date(), '>> server.js:100 - ', rows);
           if (err) reject(err);
 
-          console.log('rows', rows);
-          let results = rows.map(r => {
-            console.log('r', r);
-            return transformRow(r);
-          });
+          let results = rows.map(transformRow);
+
           return resolve({ results: results });
         });
       });
