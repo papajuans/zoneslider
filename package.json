@@ -17,7 +17,9 @@
     "browserify": "~3.41.0",
     "express": "^4.18.2",
     "luxon": "^3.3.0",
-    "moment": "^2.29.4"
+    "sqlite3": "^5.1.6",
+    "timezonecomplete": "^5.12.4",
+    "tzdata": "^1.0.38"
   },
   "engines": {
     "node": "*"
