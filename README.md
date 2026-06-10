@@ -1,12 +1,12 @@
 # Zoneslider
-Use raphael.js for some mildly interesting timezone visualizations. Instead
-of using dropdowns or just raw text to determine city offset, we "plot"
-cities along an infinite timeline.
+Mildly interesting timezone visualization. Instead of using dropdowns or just
+raw text to determine city offset, we "plot" cities along an infinite
+timeline.
 
 This allows one to quickly and visually quantify the difference in hours
 and time of day among various cities.
 
-Dragging the the timeline allows you to quickly compute "what-if" scenarios: 
+Dragging the timeline allows you to quickly compute "what-if" scenarios:
 "If it's 9am in NYC, what time is it in London?" and vice versa.
 
 Hovering over a city will give you relative calculations to other cities; how
@@ -16,44 +16,42 @@ A demo can be seen here: http://www.hoursapart.com
 
 # Technical bits
 
-## Javascript
-grunt is used to manage the Javascript bits of the project. More specifically,
-browserify is used to combine all source JS files into a single file. grunt
-needs to be installed globally so that the `grunt` binary is available on your
-path.
+Zoneslider is a fully static site — there is no server, no build step, and no
+runtime dependencies. Serve the `public/` directory with any static file
+server and you're done:
 
 ```
-npm install -g grunt
+npx serve public
+# or
+python3 -m http.server -d public
 ```
 
-The default `grunt` task is `browserify watch`, which will both combine the
-javascript src files and also being watching any files for changes.
+## How it works
 
-The outputted file is `public/dist/bundle.js`.
+All application state is three values: the scrub offset from the real clock,
+the list of plotted cities (as IANA timezone names like `Europe/London`), and
+the time format. Everything on screen is re-derived from those on each render
+— `public/app.js` is the entire application.
 
-## Sinatra
-Sinatra is used to serve up everything within `public`. This includes the
-main index.html file and all static assets.
+Timezone math is delegated to the browser's own tz database via
+`Intl.DateTimeFormat`, which gives historically correct local times and DST
+transitions for any instant, past or future. No offsets are ever stored or
+shipped.
 
-### API endpoints
-2 simple API endpoints exist:
+Plotted cities persist in `localStorage`.
 
-`/utc` returns the current UTC time as reported by the server.
+## Where is the city data coming from?
 
-`/search?q=` returns search results for city searches.
+geonames.org provides Creative Commons licensed data files that pair city
+names with IANA timezone names: http://download.geonames.org/export/dump/readme.txt
 
-## Where is the data coming from?
-Pretty much all Unix systems make use of the tz database (aka Olson database or zoneinfo) 
-located somewhere near /usr/share/zoneinfo. These set of files store all the rules of
-timezones and associated daylight savings adjustments for various cities in the format of
-'continent/city', like `Asia/Tokyo` or `America/Chicago`.
+`data/generate-cities.js` converts `data/cities15000.txt` (a tab-delimited
+dump of all cities with population over 15,000) into `public/cities.json`,
+which the frontend fetches lazily and searches client-side:
 
-geonames.org provides Creative Commons licensed data files that mesh up city names with
-the zoneinfo timezone name. http://download.geonames.org/export/dump/readme.txt
+```
+node data/generate-cities.js
+```
 
-`data/generate_db.rb` is a small ruby script that reads in `data/cities15000.txt`, a tab-
-delimited file containing cities and their zoneinfo-formatted timezone name, and loads
-data into `cities.db`, a Sqlite3 database.
-
-Sinatra then just does a search within cities.db to find correspodning timezone information.
-The ruby library TZInfo is used to compute actual timezone-related calculations.
+Re-run it only when refreshing the geonames dump; the generated file is
+checked in.

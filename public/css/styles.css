@@ -1,14 +1,152 @@
-#zoneslider {
-  /*border: 1px #bbb solid;
-  height: 350px;
-  width: 900px;*/
-  /*top:30%;*/
-  margin:auto;
+body {
+  font-family: Georgia, serif;
+  color: #222;
+  margin: 16px 24px;
 }
-body { text-align: center; }
-#controls { margin-bottom: 1em; display:none; }
-.dropdown-menu .active > a,
-.dropdown-menu .active > a:hover {
-  background-color: #ccc;
-  background-image: none;
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+header p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+#controls {
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+#controls button {
+  font: inherit;
+  font-size: 13px;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+#controls button:hover {
+  background: #eee;
+}
+
+#search {
+  position: relative;
+  margin: 12px 0;
+  width: 280px;
+}
+
+#city-search {
+  font: inherit;
+  font-size: 14px;
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+#search-results {
+  position: absolute;
+  z-index: 10;
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#search-results:empty {
+  display: none;
+}
+
+#search-results li {
+  padding: 5px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#search-results li:hover {
+  background: #eee;
+}
+
+#timeline-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+#zoneslider {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#zoneslider:active {
+  cursor: grabbing;
+}
+
+.daybox {
+  fill: #fff;
+  stroke: #aaa;
+}
+
+.daybox-date {
+  font: 17px Georgia, serif;
+  fill: #222;
+  text-anchor: middle;
+}
+
+.tick {
+  stroke: #888;
+}
+
+.tick-label {
+  font: 11px Georgia, serif;
+  fill: #555;
+  text-anchor: middle;
+}
+
+.marker {
+  stroke: #ff0000;
+  opacity: 0.35;
+}
+
+.city-box {
+  fill: #fff;
+  stroke: #222;
+  fill-opacity: 0.85;
+}
+
+.city.hovered .city-box {
+  stroke-width: 2;
+}
+
+.city-name {
+  font: 16px sans-serif;
+  fill: #222;
+  text-anchor: middle;
+}
+
+.city-time {
+  font: 14px sans-serif;
+  fill: #444;
+  text-anchor: middle;
+}
+
+.city-remove {
+  font: 12px sans-serif;
+  fill: #aaa;
+  text-anchor: middle;
+  cursor: pointer;
+}
+
+.city-remove:hover {
+  fill: #222;
 }
