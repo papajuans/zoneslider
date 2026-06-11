@@ -9,9 +9,9 @@
 const DAY_MS = 86400000;
 const DAY_WIDTH = 320; // pixels per 24 hours
 const PX_PER_MS = DAY_WIDTH / DAY_MS;
-const TIMELINE_Y = 56; // top of the day-box strip
+const TIMELINE_Y = 8; // top of the day-box strip
 const TIMELINE_H = 76;
-const LABEL_TOP = 192; // y of the first row of city cards
+const LABEL_TOP = 148; // y of the first row of city cards
 const ROW_H = 96; // vertical spacing between stacked card rows
 const CARD_H = 58; // city card height
 
@@ -100,33 +100,9 @@ function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 }
 
-// Day/night gradient stops, expressed once as an SVG <linearGradient>. Because
-// each day box is exactly one day wide and references this gradient in
-// objectBoundingBox units, the night→dawn→day→dusk→night cycle repeats per day
-// and tiles seamlessly (night meets night at each midnight boundary).
-const SKY_STOPS = [
-  [0.00, "#0b1d33"], // midnight — deep night
-  [0.15, "#16263f"],
-  [0.22, "#46546d"], // pre-dawn
-  [0.27, "#d9825b"], // sunrise
-  [0.33, "#f0c27b"], // morning glow
-  [0.42, "#a9d6e5"],
-  [0.50, "#cdeafd"], // noon — bright sky
-  [0.58, "#a9d6e5"],
-  [0.67, "#f0c27b"],
-  [0.73, "#d9825b"], // sunset
-  [0.78, "#46546d"],
-  [0.85, "#16263f"],
-  [1.00, "#0b1d33"], // midnight — deep night
-];
-
 function defs(width) {
-  const stops = SKY_STOPS
-    .map(([o, c]) => `<stop offset="${o * 100}%" stop-color="${c}"/>`)
-    .join("");
   return `<defs>
-    <linearGradient id="daygrad" x1="0" y1="0" x2="1" y2="0">${stops}</linearGradient>
-    <clipPath id="bandclip"><rect x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="20"/></clipPath>
+    <clipPath id="bandclip"><rect x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="16"/></clipPath>
     <filter id="cardshadow" x="-20%" y="-20%" width="140%" height="170%">
       <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.26"/>
     </filter>
@@ -143,15 +119,16 @@ function render() {
 
   const out = [defs(width)];
 
-  // Gradient day boxes (clipped to a rounded band) plus 6am/noon/6pm ticks and
-  // the date label, covering the visible range.
+  // Day boxes in alternating surface tones (clipped to a rounded band) plus
+  // 6am/noon/6pm ticks and the date label, covering the visible range.
   const leftWall = now - centerX / PX_PER_MS;
   const rightWall = now + (width - centerX) / PX_PER_MS;
   const band = [];
   const overlay = [];
   for (let day = Math.floor(leftWall / DAY_MS) * DAY_MS; day < rightWall; day += DAY_MS) {
     const x = xOf(day);
-    band.push(`<rect x="${x}" y="${TIMELINE_Y}" width="${DAY_WIDTH}" height="${TIMELINE_H}" fill="url(#daygrad)"/>`);
+    const alt = Math.abs(day / DAY_MS) % 2 === 1;
+    band.push(`<rect class="daybox${alt ? " alt" : ""}" x="${x}" y="${TIMELINE_Y}" width="${DAY_WIDTH}" height="${TIMELINE_H}"/>`);
     overlay.push(`<text class="daybox-date" x="${x + DAY_WIDTH / 2}" y="${TIMELINE_Y + 26}">${formatDate(day)}</text>`);
     for (const [hours, label] of [[6, "6am"], [12, "noon"], [18, "6pm"]]) {
       const tickX = x + hours * 3600000 * PX_PER_MS;
@@ -159,10 +136,9 @@ function render() {
       overlay.push(`<text class="tick-label" x="${tickX}" y="${TIMELINE_Y + TIMELINE_H - 9}">${label}</text>`);
     }
   }
-  // Shadow caster behind the band, the clipped gradient, then a hairline frame.
-  out.push(`<rect class="band-shadow" x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="20" filter="url(#cardshadow)"/>`);
+  // The clipped day boxes, then a hairline frame around the band.
   out.push(`<g clip-path="url(#bandclip)">${band.join("")}</g>`);
-  out.push(`<rect class="band-frame" x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="20"/>`);
+  out.push(`<rect class="band-frame" x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="16"/>`);
   out.push(overlay.join(""));
 
   // City markers. Cards are stacked into rows so they never overlap.
@@ -248,7 +224,9 @@ function syncToolbar() {
   }
 }
 
-document.getElementById("controls").addEventListener("click", (e) => {
+// The controls live in two places (format toggle in the app bar, jump chips
+// in the content area), so listen at the document level.
+document.addEventListener("click", (e) => {
   const button = e.target.closest("button");
   if (!button) return;
   if (button.dataset.hours) {

@@ -34,36 +34,58 @@ body {
   line-height: 1.45;
 }
 
-.app {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 16px 20px 48px;
+button {
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  user-select: none;
 }
 
-/* App bar ------------------------------------------------------------------ */
-.app-bar {
+/* Top app bar -------------------------------------------------------------- */
+.top-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 4px;
+  min-height: 64px;
+  padding: 8px 16px;
+  background: var(--surface-container-low);
 }
 
 .app-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
+  flex: none;
   border-radius: 50%;
   background: var(--primary-container);
   color: var(--primary);
 }
 
-.app-bar h1 {
+.top-app-bar h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 500;
-  letter-spacing: .1px;
+  letter-spacing: 0;
+}
+
+.bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+/* Content ------------------------------------------------------------------ */
+.app {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px 20px 48px;
 }
 
 .supporting {
@@ -74,46 +96,35 @@ body {
 
 .supporting strong { color: var(--on-surface); font-weight: 500; }
 
-/* Toolbar card ------------------------------------------------------------- */
-.toolbar {
+.controls-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  background: var(--surface-container-low);
-  border-radius: 24px;
-  box-shadow: var(--shadow-1);
+  gap: 12px 20px;
+  margin-bottom: 28px;
 }
 
+/* Assist chips (the jump buttons) */
 .chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-button {
-  font-family: var(--font);
-  cursor: pointer;
-  border: none;
-  user-select: none;
-}
-
-/* Tonal buttons (the jump chips) */
-.btn-tonal {
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 20px;
+.chip {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--on-secondary-container);
-  background: var(--secondary-container);
-  transition: filter .15s, box-shadow .15s;
+  color: var(--on-surface);
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  transition: background .15s;
 }
 
-.btn-tonal:hover { filter: brightness(.96); box-shadow: var(--shadow-1); }
-.btn-tonal:active { filter: brightness(.92); }
+.chip:hover { background: rgba(25, 28, 32, .08); }
+.chip:active { background: rgba(25, 28, 32, .12); }
 
 /* Outlined button (reset) */
 .btn-outlined {
@@ -158,27 +169,26 @@ button {
   color: var(--on-secondary-container);
 }
 
-/* Search bar --------------------------------------------------------------- */
+/* Search bar ----------------------------------------------------------------*/
 .search-bar {
   position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1 1 280px;
   max-width: 420px;
-  height: 56px;
-  padding: 0 18px;
-  margin-bottom: 28px;
+  height: 48px;
+  padding: 0 16px;
   background: var(--surface-container-high);
-  border-radius: 28px;
-  box-shadow: var(--shadow-1);
+  border-radius: 24px;
   transition: box-shadow .15s;
 }
 
-.search-bar:focus-within { box-shadow: var(--shadow-2); }
+.search-bar:focus-within { box-shadow: var(--shadow-1); }
 
 .search-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   flex: none;
   color: var(--on-surface-variant);
 }
@@ -238,31 +248,23 @@ button {
 
 #zoneslider:active { cursor: grabbing; }
 
-/* The gradient band */
-.band-shadow { fill: var(--surface); }
-.band-frame { fill: none; stroke: rgba(255, 255, 255, .35); stroke-width: 1; }
+/* The day band: flat alternating surface tones inside a hairline frame. */
+.daybox { fill: var(--surface-container); }
+.daybox.alt { fill: var(--surface-container-high); }
+.band-frame { fill: none; stroke: var(--outline-variant); stroke-width: 1; }
 
-/* Date + tick labels carry a soft halo so they read over any sky color. */
 .daybox-date {
-  font: 500 17px var(--font);
-  fill: #ffffff;
+  font: 500 15px var(--font);
+  fill: var(--on-surface);
   text-anchor: middle;
-  paint-order: stroke;
-  stroke: rgba(0, 0, 0, .35);
-  stroke-width: 3px;
-  stroke-linejoin: round;
 }
 
-.tick { stroke: rgba(255, 255, 255, .55); stroke-width: 1; }
+.tick { stroke: var(--outline-variant); stroke-width: 1; }
 
 .tick-label {
   font: 400 11px var(--font);
-  fill: #ffffff;
+  fill: var(--on-surface-variant);
   text-anchor: middle;
-  paint-order: stroke;
-  stroke: rgba(0, 0, 0, .3);
-  stroke-width: 2.5px;
-  stroke-linejoin: round;
 }
 
 /* City markers + cards */
@@ -270,7 +272,7 @@ button {
 .marker-dot { fill: var(--primary); }
 
 .city-box {
-  fill: var(--surface-container-high);
+  fill: var(--surface-container-low);
   stroke: var(--outline-variant);
   stroke-width: 1;
   transition: fill .15s;
