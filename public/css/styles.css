@@ -1,81 +1,229 @@
+/* Material Design 3 (light) token set, indigo/blue palette. */
+:root {
+  --primary: #415f91;
+  --on-primary: #ffffff;
+  --primary-container: #d7e3ff;
+  --on-primary-container: #001b3c;
+  --secondary-container: #dbe2f9;
+  --on-secondary-container: #141b2c;
+  --surface: #f9f9ff;
+  --surface-container-low: #f2f3fa;
+  --surface-container: #eceef4;
+  --surface-container-high: #e6e8ee;
+  --surface-container-highest: #e1e2e9;
+  --on-surface: #191c20;
+  --on-surface-variant: #44474e;
+  --outline: #74777f;
+  --outline-variant: #c4c6d0;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, .3), 0 1px 3px 1px rgba(0, 0, 0, .15);
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, .3), 0 2px 6px 2px rgba(0, 0, 0, .15);
+
+  --font: "Roboto Flex", "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-  font-family: Georgia, serif;
-  color: #222;
-  margin: 16px 24px;
+  margin: 0;
+  font-family: var(--font);
+  color: var(--on-surface);
+  background: var(--surface);
+  line-height: 1.45;
 }
 
-header h1 {
-  margin: 0 0 8px;
-  font-size: 22px;
+.app {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px 20px 48px;
 }
 
-header p {
-  margin: 2px 0;
+/* App bar ------------------------------------------------------------------ */
+.app-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px;
+}
+
+.app-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary-container);
+  color: var(--primary);
+}
+
+.app-bar h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: .1px;
+}
+
+.supporting {
+  margin: 4px 4px 20px;
+  color: var(--on-surface-variant);
   font-size: 14px;
 }
 
-#controls {
-  margin: 12px 0;
-  font-size: 14px;
+.supporting strong { color: var(--on-surface); font-weight: 500; }
+
+/* Toolbar card ------------------------------------------------------------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--surface-container-low);
+  border-radius: 24px;
+  box-shadow: var(--shadow-1);
 }
 
-#controls button {
-  font: inherit;
-  font-size: 13px;
-  background: #fff;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  padding: 2px 8px;
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button {
+  font-family: var(--font);
   cursor: pointer;
+  border: none;
+  user-select: none;
 }
 
-#controls button:hover {
-  background: #eee;
+/* Tonal buttons (the jump chips) */
+.btn-tonal {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-secondary-container);
+  background: var(--secondary-container);
+  transition: filter .15s, box-shadow .15s;
 }
 
-#search {
+.btn-tonal:hover { filter: brightness(.96); box-shadow: var(--shadow-1); }
+.btn-tonal:active { filter: brightness(.92); }
+
+/* Outlined button (reset) */
+.btn-outlined {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary);
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  transition: background .15s;
+}
+
+.btn-outlined:hover { background: rgba(65, 95, 145, .08); }
+.btn-outlined:active { background: rgba(65, 95, 145, .12); }
+
+/* Segmented format toggle */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--outline);
+  border-radius: 20px;
+  overflow: hidden;
+  height: 40px;
+}
+
+.segmented button {
+  height: 100%;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface);
+  background: transparent;
+  transition: background .15s;
+}
+
+.segmented button + button { border-left: 1px solid var(--outline); }
+.segmented button:hover { background: rgba(65, 95, 145, .08); }
+
+.segmented button.active {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+/* Search bar --------------------------------------------------------------- */
+.search-bar {
   position: relative;
-  margin: 12px 0;
-  width: 280px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 420px;
+  height: 56px;
+  padding: 0 18px;
+  margin-bottom: 28px;
+  background: var(--surface-container-high);
+  border-radius: 28px;
+  box-shadow: var(--shadow-1);
+  transition: box-shadow .15s;
+}
+
+.search-bar:focus-within { box-shadow: var(--shadow-2); }
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  color: var(--on-surface-variant);
 }
 
 #city-search {
-  font: inherit;
-  font-size: 14px;
-  width: 100%;
-  padding: 4px 8px;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  box-sizing: border-box;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font);
+  font-size: 16px;
+  color: var(--on-surface);
 }
+
+#city-search::placeholder { color: var(--on-surface-variant); }
+#city-search::-webkit-search-cancel-button { -webkit-appearance: none; }
 
 #search-results {
   position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
   z-index: 10;
   list-style: none;
-  margin: 2px 0 0;
-  padding: 0;
-  width: 100%;
-  background: #fff;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  margin: 0;
+  padding: 8px 0;
+  background: var(--surface-container);
+  border-radius: 16px;
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
 }
 
-#search-results:empty {
-  display: none;
-}
+#search-results:empty { display: none; }
 
 #search-results li {
-  padding: 5px 8px;
-  font-size: 14px;
+  padding: 10px 18px;
+  font-size: 15px;
   cursor: pointer;
+  transition: background .12s;
 }
 
-#search-results li:hover {
-  background: #eee;
-}
+#search-results li:hover { background: var(--surface-container-highest); }
 
+/* Timeline ----------------------------------------------------------------- */
 #timeline-container {
   width: 100%;
   overflow: hidden;
@@ -88,65 +236,72 @@ header p {
   -webkit-user-select: none;
 }
 
-#zoneslider:active {
-  cursor: grabbing;
-}
+#zoneslider:active { cursor: grabbing; }
 
-.daybox {
-  fill: #fff;
-  stroke: #aaa;
-}
+/* The gradient band */
+.band-shadow { fill: var(--surface); }
+.band-frame { fill: none; stroke: rgba(255, 255, 255, .35); stroke-width: 1; }
 
+/* Date + tick labels carry a soft halo so they read over any sky color. */
 .daybox-date {
-  font: 17px Georgia, serif;
-  fill: #222;
+  font: 500 17px var(--font);
+  fill: #ffffff;
   text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, .35);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 
-.tick {
-  stroke: #888;
-}
+.tick { stroke: rgba(255, 255, 255, .55); stroke-width: 1; }
 
 .tick-label {
-  font: 11px Georgia, serif;
-  fill: #555;
+  font: 400 11px var(--font);
+  fill: #ffffff;
   text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, .3);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
 }
 
-.marker {
-  stroke: #ff0000;
-  opacity: 0.35;
-}
+/* City markers + cards */
+.marker { stroke: var(--primary); stroke-width: 2; opacity: .55; }
+.marker-dot { fill: var(--primary); }
 
 .city-box {
-  fill: #fff;
-  stroke: #222;
-  fill-opacity: 0.85;
+  fill: var(--surface-container-high);
+  stroke: var(--outline-variant);
+  stroke-width: 1;
+  transition: fill .15s;
 }
 
 .city.hovered .city-box {
-  stroke-width: 2;
+  fill: var(--primary-container);
+  stroke: var(--primary);
 }
 
 .city-name {
-  font: 16px sans-serif;
-  fill: #222;
+  font: 500 16px var(--font);
+  fill: var(--on-surface);
   text-anchor: middle;
 }
 
 .city-time {
-  font: 14px sans-serif;
-  fill: #444;
+  font: 400 18px var(--font);
+  fill: var(--primary);
   text-anchor: middle;
 }
+
+.city.hovered .city-name,
+.city.hovered .city-time { fill: var(--on-primary-container); }
 
 .city-remove {
-  font: 12px sans-serif;
-  fill: #aaa;
+  font: 500 12px var(--font);
+  fill: var(--on-surface-variant);
   text-anchor: middle;
   cursor: pointer;
+  letter-spacing: .3px;
 }
 
-.city-remove:hover {
-  fill: #222;
-}
+.city-remove:hover { fill: var(--primary); }

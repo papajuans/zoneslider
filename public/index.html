@@ -3,41 +3,56 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#415f91">
     <title>ZoneSlider</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Flex:opsz,wght@8..144,400;8..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
   </head>
   <body>
-    <header>
-      <h1>ZoneSlider</h1>
-      <p><strong>Drag</strong> the timeline to quickly see what time it is in different cities.</p>
-      <p><strong>Hover</strong> over a city to find out how many hours away the other cities are.</p>
-      <p>See <a href="https://github.com/papajuans/zoneslider">github</a>.</p>
-    </header>
+    <div class="app">
+      <header class="app-bar">
+        <span class="app-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 18a8 8 0 0 1 0-16v8l5.66 5.66A7.97 7.97 0 0 1 12 20Z"/></svg>
+        </span>
+        <h1>ZoneSlider</h1>
+      </header>
 
-    <div id="controls">
-      Format:
-      <button data-format="ampm">AM-PM</button>
-      <button data-format="mil">24 hour</button>
-      |
-      <button id="reset">Reset to now</button>
-      |
-      <button data-hours="24">+1 day</button>
-      <button data-hours="-24">-1 day</button>
-      <button data-hours="12">+12h</button>
-      <button data-hours="-12">-12h</button>
-      <button data-hours="8">+8h</button>
-      <button data-hours="-8">-8h</button>
-      <button data-hours="1">+1h</button>
-      <button data-hours="-1">-1h</button>
-    </div>
+      <p class="supporting">
+        <strong>Drag</strong> the timeline to see what time it is in different cities.
+        <strong>Hover</strong> a city for how many hours away the others are.
+      </p>
 
-    <div id="search">
-      <input id="city-search" type="search" placeholder="Search for a city…" autocomplete="off">
-      <ul id="search-results"></ul>
-    </div>
+      <section class="toolbar" id="controls" aria-label="Controls">
+        <div class="segmented" role="group" aria-label="Time format">
+          <button data-format="ampm" aria-pressed="true">AM·PM</button>
+          <button data-format="mil" aria-pressed="false">24-hour</button>
+        </div>
 
-    <div id="timeline-container">
-      <svg id="zoneslider"></svg>
+        <button id="reset" class="btn-outlined">Reset to now</button>
+
+        <div class="chip-row" aria-label="Jump">
+          <button class="btn-tonal" data-hours="-24">−1 day</button>
+          <button class="btn-tonal" data-hours="24">+1 day</button>
+          <button class="btn-tonal" data-hours="-12">−12h</button>
+          <button class="btn-tonal" data-hours="12">+12h</button>
+          <button class="btn-tonal" data-hours="-8">−8h</button>
+          <button class="btn-tonal" data-hours="8">+8h</button>
+          <button class="btn-tonal" data-hours="-1">−1h</button>
+          <button class="btn-tonal" data-hours="1">+1h</button>
+        </div>
+      </section>
+
+      <div class="search-bar" id="search">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5L20.49 19l-5-5Zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14Z"/></svg>
+        <input id="city-search" type="search" placeholder="Search for a city" autocomplete="off" aria-label="Search for a city">
+        <ul id="search-results"></ul>
+      </div>
+
+      <div id="timeline-container">
+        <svg id="zoneslider"></svg>
+      </div>
     </div>
 
     <script src="app.js"></script>

@@ -7,12 +7,13 @@
 "use strict";
 
 const DAY_MS = 86400000;
-const DAY_WIDTH = 300; // pixels per 24 hours
+const DAY_WIDTH = 320; // pixels per 24 hours
 const PX_PER_MS = DAY_WIDTH / DAY_MS;
-const TIMELINE_Y = 40; // top of the day-box strip
-const TIMELINE_H = 60;
-const LABEL_TOP = 130; // y of the first row of city labels
-const ROW_H = 78; // vertical spacing between stacked label rows
+const TIMELINE_Y = 56; // top of the day-box strip
+const TIMELINE_H = 76;
+const LABEL_TOP = 192; // y of the first row of city cards
+const ROW_H = 96; // vertical spacing between stacked card rows
+const CARD_H = 58; // city card height
 
 const state = {
   // ms between the timeline's "virtual now" and the real clock. Dragging
@@ -99,6 +100,39 @@ function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 }
 
+// Day/night gradient stops, expressed once as an SVG <linearGradient>. Because
+// each day box is exactly one day wide and references this gradient in
+// objectBoundingBox units, the night→dawn→day→dusk→night cycle repeats per day
+// and tiles seamlessly (night meets night at each midnight boundary).
+const SKY_STOPS = [
+  [0.00, "#0b1d33"], // midnight — deep night
+  [0.15, "#16263f"],
+  [0.22, "#46546d"], // pre-dawn
+  [0.27, "#d9825b"], // sunrise
+  [0.33, "#f0c27b"], // morning glow
+  [0.42, "#a9d6e5"],
+  [0.50, "#cdeafd"], // noon — bright sky
+  [0.58, "#a9d6e5"],
+  [0.67, "#f0c27b"],
+  [0.73, "#d9825b"], // sunset
+  [0.78, "#46546d"],
+  [0.85, "#16263f"],
+  [1.00, "#0b1d33"], // midnight — deep night
+];
+
+function defs(width) {
+  const stops = SKY_STOPS
+    .map(([o, c]) => `<stop offset="${o * 100}%" stop-color="${c}"/>`)
+    .join("");
+  return `<defs>
+    <linearGradient id="daygrad" x1="0" y1="0" x2="1" y2="0">${stops}</linearGradient>
+    <clipPath id="bandclip"><rect x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="20"/></clipPath>
+    <filter id="cardshadow" x="-20%" y="-20%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.26"/>
+    </filter>
+  </defs>`;
+}
+
 function render() {
   const now = virtualNow();
   const width = svg.parentNode.clientWidth;
@@ -107,23 +141,31 @@ function render() {
   // the center of the screen; everything else falls out of that.
   const xOf = (wall) => centerX + (wall - now) * PX_PER_MS;
 
-  const out = [];
+  const out = [defs(width)];
 
-  // Day boxes with 6am/noon/6pm ticks, covering the visible range.
+  // Gradient day boxes (clipped to a rounded band) plus 6am/noon/6pm ticks and
+  // the date label, covering the visible range.
   const leftWall = now - centerX / PX_PER_MS;
   const rightWall = now + (width - centerX) / PX_PER_MS;
+  const band = [];
+  const overlay = [];
   for (let day = Math.floor(leftWall / DAY_MS) * DAY_MS; day < rightWall; day += DAY_MS) {
     const x = xOf(day);
-    out.push(`<rect class="daybox" x="${x}" y="${TIMELINE_Y}" width="${DAY_WIDTH}" height="${TIMELINE_H}"/>`);
-    out.push(`<text class="daybox-date" x="${x + DAY_WIDTH / 2}" y="${TIMELINE_Y + 18}">${formatDate(day)}</text>`);
+    band.push(`<rect x="${x}" y="${TIMELINE_Y}" width="${DAY_WIDTH}" height="${TIMELINE_H}" fill="url(#daygrad)"/>`);
+    overlay.push(`<text class="daybox-date" x="${x + DAY_WIDTH / 2}" y="${TIMELINE_Y + 26}">${formatDate(day)}</text>`);
     for (const [hours, label] of [[6, "6am"], [12, "noon"], [18, "6pm"]]) {
       const tickX = x + hours * 3600000 * PX_PER_MS;
-      out.push(`<line class="tick" x1="${tickX}" y1="${TIMELINE_Y + 38}" x2="${tickX}" y2="${TIMELINE_Y + TIMELINE_H}"/>`);
-      out.push(`<text class="tick-label" x="${tickX}" y="${TIMELINE_Y + 33}">${label}</text>`);
+      overlay.push(`<line class="tick" x1="${tickX}" y1="${TIMELINE_Y + 46}" x2="${tickX}" y2="${TIMELINE_Y + TIMELINE_H - 6}"/>`);
+      overlay.push(`<text class="tick-label" x="${tickX}" y="${TIMELINE_Y + TIMELINE_H - 9}">${label}</text>`);
     }
   }
+  // Shadow caster behind the band, the clipped gradient, then a hairline frame.
+  out.push(`<rect class="band-shadow" x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="20" filter="url(#cardshadow)"/>`);
+  out.push(`<g clip-path="url(#bandclip)">${band.join("")}</g>`);
+  out.push(`<rect class="band-frame" x="0" y="${TIMELINE_Y}" width="${width}" height="${TIMELINE_H}" rx="20"/>`);
+  out.push(overlay.join(""));
 
-  // City markers. Labels are stacked into rows so they never overlap.
+  // City markers. Cards are stacked into rows so they never overlap.
   const cities = state.cities.map((c) => ({ ...c, wall: wallTime(now, c.tz) }));
   const hovered = cities.find((c) => c.name === state.hover);
   const rows = []; // per row, list of occupied [left, right] intervals
@@ -132,30 +174,33 @@ function render() {
   for (const city of cities) {
     const x = xOf(city.wall);
     const hour = new Date(city.wall).getUTCHours();
-    const title = `${city.name} ${hour >= 6 && hour < 18 ? "☼" : "☾"}`;
+    const day = hour >= 6 && hour < 18;
+    const title = `${city.name} ${day ? "☀" : "☾"}`;
     const subtitle = hovered && hovered.name !== city.name
       ? relativeHours(hovered.wall, city.wall)
       : formatTime(city.wall);
 
-    const boxW = Math.max(title.length, subtitle.length) * 8.5 + 24;
+    const boxW = Math.max(title.length * 9, subtitle.length * 11) + 32;
     let row = 0;
     while ((rows[row] || []).some(([l, r]) => x - boxW / 2 < r && x + boxW / 2 > l)) row++;
-    (rows[row] = rows[row] || []).push([x - boxW / 2 - 6, x + boxW / 2 + 6]);
+    (rows[row] = rows[row] || []).push([x - boxW / 2 - 8, x + boxW / 2 + 8]);
     maxRow = Math.max(maxRow, row);
 
     const boxY = LABEL_TOP + row * ROW_H;
     const cityAttr = `data-city="${esc(city.name)}"`;
-    out.push(`<line class="marker" x1="${x}" y1="${TIMELINE_Y}" x2="${x}" y2="${boxY}"/>`);
-    out.push(`<g class="city${city.name === state.hover ? " hovered" : ""}" ${cityAttr}>`);
-    out.push(`<rect class="city-box" x="${x - boxW / 2}" y="${boxY}" width="${boxW}" height="46" rx="4"/>`);
-    out.push(`<text class="city-name" x="${x}" y="${boxY + 18}">${esc(title)}</text>`);
-    out.push(`<text class="city-time" x="${x}" y="${boxY + 37}">${esc(subtitle)}</text>`);
-    out.push(`<text class="city-remove" x="${x}" y="${boxY + 60}" data-remove="${esc(city.name)}">(remove)</text>`);
+    const isHover = city.name === state.hover;
+    out.push(`<line class="marker" x1="${x}" y1="${TIMELINE_Y + TIMELINE_H}" x2="${x}" y2="${boxY}"/>`);
+    out.push(`<circle class="marker-dot" cx="${x}" cy="${TIMELINE_Y + TIMELINE_H}" r="4"/>`);
+    out.push(`<g class="city${isHover ? " hovered" : ""}" ${cityAttr}>`);
+    out.push(`<rect class="city-box" x="${x - boxW / 2}" y="${boxY}" width="${boxW}" height="${CARD_H}" rx="16" filter="url(#cardshadow)"/>`);
+    out.push(`<text class="city-name" x="${x}" y="${boxY + 23}">${esc(title)}</text>`);
+    out.push(`<text class="city-time" x="${x}" y="${boxY + 45}">${esc(subtitle)}</text>`);
+    out.push(`<text class="city-remove" x="${x}" y="${boxY + CARD_H + 17}" data-remove="${esc(city.name)}">Remove</text>`);
     out.push(`</g>`);
   }
 
   svg.setAttribute("width", width);
-  svg.setAttribute("height", LABEL_TOP + (maxRow + 1) * ROW_H + 10);
+  svg.setAttribute("height", LABEL_TOP + (maxRow + 1) * ROW_H + 12);
   svg.innerHTML = out.join("");
 }
 
@@ -194,6 +239,15 @@ svg.addEventListener("click", (e) => {
   render();
 });
 
+// Reflect the active time format on the segmented button group.
+function syncToolbar() {
+  for (const button of document.querySelectorAll("[data-format]")) {
+    const active = button.dataset.format === state.format;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active);
+  }
+}
+
 document.getElementById("controls").addEventListener("click", (e) => {
   const button = e.target.closest("button");
   if (!button) return;
@@ -202,6 +256,7 @@ document.getElementById("controls").addEventListener("click", (e) => {
   } else if (button.dataset.format) {
     state.format = button.dataset.format;
     localStorage.setItem("zoneslider.format", state.format);
+    syncToolbar();
   } else if (button.id === "reset") {
     state.timeOffset = 0;
   }
@@ -257,4 +312,5 @@ searchInput.addEventListener("input", async () => {
 
 window.addEventListener("resize", render);
 setInterval(render, 1000); // virtual now derives from Date.now(), so a render IS the tick
+syncToolbar();
 render();
